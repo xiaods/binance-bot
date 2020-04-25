@@ -37,6 +37,7 @@ def initialize_arb():
     bot_start_time = str(datetime.now())
     welcome_message+= "\nBot Start Time: {}\n\n\n".format(bot_start_time)
     print(welcome_message)
+    data_log_to_file(welcome_message)
     time.sleep(1)
     status = client.get_system_status()
     print("\nExchange Status: ", status)
@@ -118,7 +119,7 @@ def loan_asset(eos_symbol, qty):
         print(transaction)
 
 def process_message(msg):
-    print(msg)
+    # print(msg)
     data_log_to_file(msg)
     if msg['e'] == 'error':
         # close and restart the socket
