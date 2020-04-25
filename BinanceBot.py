@@ -5,21 +5,20 @@ Python-Binance ( https://github.com/sammchardy/python-binance )
 pip install python-binance  (note: support python3)
 
 """
-
-from binance.client import Client
-from binance.enums import *
 import time
 from datetime import datetime
-from binance.websockets import BinanceSocketManager
-
-import os
 import sys
 import signal
 
+from binance.client import Client
+from binance.enums import *
+from binance.websockets import BinanceSocketManager
+from twisted.internet import reactor
+
 from BinanceKeys import BinanceKey1
-api_key = BinanceKey1['api_key']
-api_secret = BinanceKey1['api_secret']
-client = Client(api_key, api_secret)
+API_KEY = BinanceKey1['api_key']
+API_SECRET = BinanceKey1['api_secret']
+client = Client(API_KEY, API_SECRET)
 
 # step0 初始化变化
 symbol = 'EOSUSDT'
@@ -49,7 +48,7 @@ def initialize_arb():
 
     # step2 监听杠杆交易
     global bm
-    bm = BinanceSocketManager(client, user_timeout=60)
+    bm = BinanceSocketManager(client)
     conn_key = bm.start_margin_socket(process_message)
     print("websocket Conn key: " + conn_key)
     bm.start()
@@ -64,17 +63,17 @@ def new_margin_order(symbol,qty):
     sell_price = float(ticker.get('askPrice'))*float(1+0.005)
     sell_price = '%.4f' % sell_price
 
-    buy_order = client.create_margin_order(symbol=symbol, 
-                                       side=SIDE_BUY, 
+    buy_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_BUY,
                                        type=ORDER_TYPE_LIMIT,
-                                       quantity=qty, 
+                                       quantity=qty,
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-    
-    sell_order = client.create_margin_order(symbol=symbol, 
-                                       side=SIDE_SELL, 
+
+    sell_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_SELL,
                                        type=ORDER_TYPE_LIMIT,
-                                       quantity=qty, 
+                                       quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
@@ -85,6 +84,10 @@ def cancel_all_margin_orders(symbol):
                                             orderId=o.get('orderId'))
         print(result)
 
+'''
+purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
+
+'''
 def is_max_margins(max_margins):
     orders = client.get_open_margin_orders(symbol=symbol)
     if len(orders) > max_margins:
@@ -92,10 +95,27 @@ def is_max_margins(max_margins):
     else:
         return False
 
+'''
+purpose: 自动借币
+
+if account.loan 有币:
+    pass
+'''
 def loan_asset(eos_symbol, qty):
-    transaction = client.create_margin_loan(asset=eos_symbol, 
+    account = client.get_margin_account()
+    userAssets = account.get('userAssets')
+    origin_loan = float(0)
+    for asset in userAssets:
+        if asset.get('asset') == 'EOS':
+            origin_loan = float(asset.get('borrowed'))
+    qty = qty - origin_loan
+    if qty <= float(0):
+        print('don\'t need loan, original loan: {}'.format(origin_loan))
+        pass
+    else:
+        transaction = client.create_margin_loan(asset=eos_symbol, 
                                             amount=qty)
-    print(transaction)
+        print(transaction)
 
 def process_message(msg):
     print(msg)
@@ -109,7 +129,7 @@ def process_message(msg):
 
 def term_sig_handler(signum, frame):
     print('catched singal: %d' % signum)
-    bm.close()
+    reactor.stop()
     sys.exit()
 
 if __name__ == "__main__":
