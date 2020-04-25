@@ -119,9 +119,8 @@ def loan_asset(eos_symbol, qty):
         print(transaction)
 
 def process_message(msg):
-    # print(msg)
-    data_log_to_file(msg)
     if msg['e'] == 'error':
+        print(msg)
         # close and restart the socket
         bm.stop_socket(conn_key)
         conn_key = bm.start_margin_socket(process_message)
@@ -132,6 +131,7 @@ def process_message(msg):
             cancel_all_margin_orders(symbol)
         # 处理event executionReport
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('x') == 'TRADE':
+            print(msg)
             new_margin_order(symbol,qty)
 
 def term_sig_handler(signum, frame):
