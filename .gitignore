@@ -1,4 +1,3 @@
-BinanceKeys.py
 sample/*
 __pycache__/*
-
+BinanceKeys-local.py
