@@ -47,7 +47,7 @@ def initialize_arb():
     new_margin_order(symbol,qty)
 
     # step2 监听杠杆交易
-    global bm
+    global bm, conn_key
     bm = BinanceSocketManager(client)
     conn_key = bm.start_margin_socket(process_message)
     print("websocket Conn key: " + conn_key)
@@ -119,18 +119,28 @@ def loan_asset(eos_symbol, qty):
 
 def process_message(msg):
     print(msg)
-
-    if is_max_margins(max_margins) == True:
-        cancel_all_margin_orders(symbol)
-
-    # 处理event executionReport
-    if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('x') == 'TRADE':
-        new_margin_order(symbol,qty)
+    data_log_to_file(msg)
+    if msg['e'] == 'error':
+        # close and restart the socket
+        bm.stop_socket(conn_key)
+        conn_key = bm.start_margin_socket(process_message)
+        print("renewer websocket Conn key: " + conn_key)
+    else:
+         # process message normally
+        if is_max_margins(max_margins) == True:
+            cancel_all_margin_orders(symbol)
+        # 处理event executionReport
+        if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('x') == 'TRADE':
+            new_margin_order(symbol,qty)
 
 def term_sig_handler(signum, frame):
     print('catched singal: %d' % signum)
     reactor.stop()
     sys.exit()
+
+def data_log_to_file(message):
+    with open('CryptoBot_DataLog.txt', 'a+') as f:
+        f.write(message)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, term_sig_handler)
