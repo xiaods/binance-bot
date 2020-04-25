@@ -127,9 +127,11 @@ def process_message(msg):
         print("renewer websocket Conn key: " + conn_key)
     else:
         # process message normally
-        print(msg)
         if is_max_margins(max_margins) == True:
             cancel_all_margin_orders(symbol)
+            # 重置60秒后，继续新的交易
+            time.sleep(60)
+            new_margin_order(symbol,qty)
         # 处理event executionReport
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == ORDER_STATUS_FILLED:
             new_margin_order(symbol,qty)
