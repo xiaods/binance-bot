@@ -131,7 +131,7 @@ def process_message(msg):
         if is_max_margins(max_margins) == True:
             cancel_all_margin_orders(symbol)
         # 处理event executionReport
-        if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('x') == 'TRADE':
+        if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == 'FILLED':
             new_margin_order(symbol,qty)
 
 def term_sig_handler(signum, frame):
