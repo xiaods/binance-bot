@@ -129,7 +129,6 @@ def process_message(msg):
         conn_key = bm.start_margin_socket(process_message)
         print("renewer websocket Conn key: " + conn_key)
     else:
-        print(msg)
         # process message normally
         if is_max_margins(max_margins) == True:
             cancel_all_margin_orders(symbol)
@@ -137,6 +136,8 @@ def process_message(msg):
             time.sleep(60)
             new_margin_order(symbol,qty)
         # 处理event executionReport
+        if msg.get('e') == 'executionReport':
+            print(msg)
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == ORDER_STATUS_FILLED:
             new_margin_order(symbol,qty)
 
