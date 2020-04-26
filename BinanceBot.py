@@ -133,6 +133,8 @@ def process_message(msg):
             time.sleep(60)
             new_margin_order(symbol,qty)
         # 处理event executionReport
+        if msg.get('e') == 'executionReport':
+            print(msg)
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == ORDER_STATUS_FILLED:
             new_margin_order(symbol,qty)
 
