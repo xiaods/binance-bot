@@ -26,7 +26,7 @@ eos_symbol = 'EOS'
 loan = 200
 depth = 10
 qty = loan / depth
-max_margins = (depth * 2) * (0.5)
+max_margins = (depth * 2) * (0.6)
 
 def run():
     initialize_arb()
@@ -138,11 +138,9 @@ def process_message(msg):
         print("renewer websocket Conn key: " + conn_key)
     else:
         # process message normally
+        # 单边出现，清空交易，等待交易员操作
         if is_max_margins(max_margins) == True:
             cancel_all_margin_orders(symbol)
-            # 重置60秒后，继续新的交易
-            time.sleep(60)
-            new_margin_order(symbol,qty)
 
         # 处理event executionReport
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol:
