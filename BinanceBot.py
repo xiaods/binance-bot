@@ -43,8 +43,11 @@ def initialize_arb():
     print("\nExchange Status: ", status)
 
     # step1 创建对手单,第一入口
+    # 1.1 清空当前交易
     cancel_all_margin_orders(symbol)
+    # 1.2 借出币
     loan_asset(eos_symbol,loan)
+    # 创建新的交易
     new_margin_order(symbol,qty)
 
     # step2 监听杠杆交易
