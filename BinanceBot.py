@@ -54,6 +54,11 @@ def initialize_arb():
     print("websocket Conn key: " + conn_key)
     bm.start()
 
+    # 30分钟ping user websocket，key可以存活1个小时
+    while True:
+        get_margin_stream_keepalive(conn_key)
+        time.sleep(60 * 30)
+
 def new_margin_order(symbol,qty):
     ticker = client.get_orderbook_ticker(symbol=symbol)
     print("Current bid price: {}".format(ticker.get('bidPrice')))
@@ -142,6 +147,15 @@ def process_message(msg):
         # 当有交易成功的挂单，挂起新的网格对手单
         if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == ORDER_STATUS_FILLED:
             new_margin_order(symbol,qty)
+
+'''
+Purpose: Keepalive a user data stream to prevent a time out. 
+User data streams will close after 60 minutes. 
+It's recommended to send a ping about every 30 minutes.
+'''
+def get_margin_stream_keepalive(listen_key):
+    result = client.margin_stream_keepalive(listen_key)
+    return result
 
 def term_sig_handler(signum, frame):
     print('catched singal: %d' % signum)
