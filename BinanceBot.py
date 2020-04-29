@@ -64,10 +64,16 @@ def initialize_arb():
         time.sleep(60 * 30)
 
 def new_margin_order(symbol,qty):
+
+    # 当前报价口的买卖价格
     ticker = client.get_orderbook_ticker(symbol=symbol)
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
+    buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+    buy_price = '%.4f' % buy_price
 
+    sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+    sell_price = '%.4f' % sell_price
 
     #计算当前账号的币的余额够不够，账户币余额必须大于30%才能交易
     account = client.get_margin_account()
@@ -75,17 +81,11 @@ def new_margin_order(symbol,qty):
     free_coin = float(0)
     for asset in userAssets:
         if asset.get('asset') == eos_symbol:
-            free_coin = asset.get('free')
+            free_coin = float(asset.get('free'))
     # 规则：账户币余额必须大于30%才能交易
     if free_coin < loan * float(0.3):
         print("Current Account coin balance is less then 30%. don't do order anymore.")
         return
-
-    buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
-    buy_price = '%.4f' % buy_price
-
-    sell_price = float(ticker.get('askPrice'))*float(1+0.005)
-    sell_price = '%.4f' % sell_price
 
     buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
