@@ -23,6 +23,7 @@ client = Client(API_KEY, API_SECRET)
 # step0 初始化变化
 symbol = 'EOSUSDT'
 eos_symbol = 'EOS'
+usdt_symbol = 'USDT'
 loan = 200
 depth = 10
 qty = loan / depth
@@ -66,6 +67,19 @@ def new_margin_order(symbol,qty):
     ticker = client.get_orderbook_ticker(symbol=symbol)
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
+
+
+    #计算当前账号的币的余额够不够，账户币余额必须大于30%才能交易
+    account = client.get_margin_account()
+    userAssets = account.get('userAssets')
+    free_coin = float(0)
+    for asset in userAssets:
+        if asset.get('asset') == eos_symbol:
+            free_coin = asset.get('free')
+    # 规则：账户币余额必须大于30%才能交易
+    if free_coin < loan * float(0.3):
+        return
+
     buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
     buy_price = '%.4f' % buy_price
 
