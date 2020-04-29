@@ -78,6 +78,7 @@ def new_margin_order(symbol,qty):
             free_coin = asset.get('free')
     # 规则：账户币余额必须大于30%才能交易
     if free_coin < loan * float(0.3):
+        print("Current Account coin balance is less then 30%. don't do order anymore.")
         return
 
     buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
@@ -154,6 +155,7 @@ def process_message(msg):
         # process message normally
         # 单边出现，等待交易员操作，保持当前挂单
         if is_max_margins(max_margins) == True:
+            print("Come across max margins limits....return, don't do order anymore.")
             return
 
         # 处理event executionReport
