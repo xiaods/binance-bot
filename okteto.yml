@@ -1,0 +1,5 @@
+name: binance-bot
+image: okteto/python:3
+command:
+- bash
+workdir: /usr/src/app
