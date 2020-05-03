@@ -1,14 +1,20 @@
-Automate trading bot for binance
+## Automate trading bot for binance
 
-0. install python-binance client
+### install python-binance client
 
-pip install python-binance
+```bash
+apt-get update
+apt-get install python3-pip
+pip3 install python-binance
+```
 
-1. Update your binance api keys
+### Update your binance api keys
 
-update BinanceKeys.py
+update BinanceKeys.py  api_key
 
-2. Run BinanceBot.py
+### Run BinanceBot.py
+
+start.sh
 
 
 
