@@ -27,11 +27,12 @@ top.sh  查询当前账户挂单状态
 
 选择：Dancing Links
 
-
 专业工具：https://github.com/Hnfull/Intensio-Obfuscator
 
 
+### 发布安装包
 
+zip -q -r -e -o qcat-release.zip ./release 
 
 
 
