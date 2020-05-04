@@ -1,3 +1,4 @@
+qcat-release-*
 settings-local.py
 sample/*
 __pycache__/*
