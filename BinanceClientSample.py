@@ -18,6 +18,9 @@ max_margins = 15
 
 def run():
     print('start running')
+    get_all_margin_orders()
+
+def get_free_assets():
     account = client.get_margin_account()
     userAssets = account.get('userAssets')
     free_coin = float(0)
@@ -29,7 +32,6 @@ def run():
             free_cash = asset.get('free')
     print(free_cash)
     print(free_coin)
-    
 
 def get_margin_stream_keepalive(listen_key):
     result = client.margin_stream_keepalive(listen_key)
@@ -81,7 +83,11 @@ def repay_asset(coin_symbol, qty):
                                             amount=qty)
     print(transaction)
 
-def cancel_all_margin_orders():
+def get_all_margin_orders():
+    orders = client.get_open_margin_orders(symbol=symbol)
+    print(orders)
+
+def cacel_all_margin_orders():
     orders = client.get_open_margin_orders(symbol=symbol)
     for o in orders:
         result = client.cancel_margin_order(symbol=symbol,
