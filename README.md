@@ -22,17 +22,17 @@ start.sh
 ```
 pip install sourcedefender
 
-$ cat /home/ubuntu/helloworld.py
+$ cat BinanceClientSample.py
 print("Hello World!")
 
-$ ls /home/ubuntu/helloworld.py
+$ sourcedefender encrypt --keep BinanceClientSample.py
 SOURCEdefender v5.0.12
 
 Processing:
 
-/home/ubuntu/helloworld.py
+/Users/xiaods/Documents/code/binance-bot/BinanceClientSample.py
 
-$ cat /home/ubuntu/helloworld.pye
+$ cat BinanceClientSample.pye
 -----BEGIN SOURCEDEFENDER FILE-----
 Version : 5.0.12
 
@@ -42,20 +42,11 @@ camVzPjFXmFkQ21+fj80MUg0Z1oG3PniOXCJ0V/Qu3/Bw0Fic0BZTGxjTm4=
 
 ------END SOURCEDEFENDER FILE------
 
-$ python3 -m sourcedefender /home/ubuntu/helloworld.pye
-Hello World!
-$
+$ python3 -m sourcedefender BinanceClientSample.pye
 
-$ cd /home/ubuntu
-$ ls
-helloworld.pye
-$ python3
->>>
->>> import sourcedefender
->>> import helloworld
-Hello World!
->>> exit()
-$
+:-(
+Currently  not working, need fix it asap.
+
 ```
 
 
