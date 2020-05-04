@@ -12,9 +12,13 @@ pip3 install python-binance
 
 update BinanceKeys.py  api_key
 
-### Run BinanceBot.py
+### 部署安装Bot
 
-start.sh
+直接复制release目录下程序到主机上即可：
+
+start.sh  启动机器人
+stop.sh  暂停机器人
+top.sh  查询当前账户挂单状态
 
 
 ### How do I protect my Python source code?
