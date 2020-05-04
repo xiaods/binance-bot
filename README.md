@@ -19,35 +19,12 @@ start.sh
 
 ### How do I protect my Python source code?
 
-```
-pip install sourcedefender
+在线混淆工具：http://pyob.oxyry.com/
 
-$ cat BinanceClientSample.py
-print("Hello World!")
 
-$ sourcedefender encrypt --keep BinanceClientSample.py
-SOURCEdefender v5.0.12
+专业工具：https://github.com/Hnfull/Intensio-Obfuscator
 
-Processing:
 
-/Users/xiaods/Documents/code/binance-bot/BinanceClientSample.py
-
-$ cat BinanceClientSample.pye
------BEGIN SOURCEDEFENDER FILE-----
-Version : 5.0.12
-
-KkVjZjNWRV4rZvmUFhXBQhPwlR6wUWASZO/Gnh8sJKzpW7c3D8TRbLfNXn01Q182QigxeW1tagq1
-c8A0WiWh5wa2k7YCd4oNugSqv/FABal7Wh1vDsVh7rPXFcamQhfqU1kv5CtmN/2G1EqRUy2PGu+p
-camVzPjFXmFkQ21+fj80MUg0Z1oG3PniOXCJ0V/Qu3/Bw0Fic0BZTGxjTm4=
-
-------END SOURCEDEFENDER FILE------
-
-$ python3 -m sourcedefender BinanceClientSample.pye
-
-:-(
-Currently  not working, need fix it asap.
-
-```
 
 
 
