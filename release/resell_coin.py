@@ -22,7 +22,7 @@ max_margins = 15
 def run():
     print('='*30)
     print("\n卖出{}，恢复Bot的最低风控阈值 >= 60 {}\n".format(coin_symbol, coin_symbol))
-    repay_coin(30)
+    repay_coin(40)
     print("Done!")
 
 def repay_coin(qty):
@@ -36,7 +36,7 @@ def repay_coin(qty):
     sell_order = client.create_margin_order(symbol=symbol, 
                                        side=SIDE_SELL, 
                                        type=ORDER_TYPE_LIMIT,
-                                       quantity=10.0, 
+                                       quantity=qty, 
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 

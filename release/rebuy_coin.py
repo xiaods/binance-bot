@@ -22,7 +22,7 @@ max_margins = 15
 def run():
     print('='*30)
     print("\n购入{}，恢复Bot的最低风控阈值 >= 60 {}\n".format(coin_symbol, coin_symbol))
-    repay_coin(30)
+    repay_coin(40)
     print("Done!")
 
 def repay_coin(qty):
