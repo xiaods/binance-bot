@@ -25,7 +25,7 @@ pip install sourcedefender
 $ cat /home/ubuntu/helloworld.py
 print("Hello World!")
 
-$ sourcedefender encrypt --ttl=1d /home/ubuntu/helloworld.py
+$ ls /home/ubuntu/helloworld.py
 SOURCEdefender v5.0.12
 
 Processing:

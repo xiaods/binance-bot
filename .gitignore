@@ -3,3 +3,4 @@ __pycache__/*
 BinanceKeys-local.py
 BinanceKeys.py
 CryptoBot_DataLog.txt
+encrypt/*
