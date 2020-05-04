@@ -1,0 +1,4 @@
+# -*- coding: utf-8 -*-
+
+BinanceKey1 = {'api_key': 'YourApiKey',
+    'api_secret':'YourApiSecret'}
