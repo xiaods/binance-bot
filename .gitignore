@@ -1,3 +1,4 @@
+settings-local.py
 sample/*
 __pycache__/*
 release/__pycache__/*
