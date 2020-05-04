@@ -17,8 +17,13 @@ usdt_symbol = 'USDT'
 max_margins = 15
 
 def run():
-    print('start running')
+    print('=========start running=================')
+
+    print("current orders")
     get_all_margin_orders()
+
+    print('current free assets')
+    get_free_assets()
 
 def get_free_assets():
     account = client.get_margin_account()
@@ -30,8 +35,8 @@ def get_free_assets():
             free_coin = asset.get('free')
         if asset.get('asset') == usdt_symbol:
             free_cash = asset.get('free')
-    print(free_cash)
-    print(free_coin)
+    print("free cash: %.4f " % float(free_cash) )
+    print("free coin: %.4f " % float(free_coin) )
 
 def get_margin_stream_keepalive(listen_key):
     result = client.margin_stream_keepalive(listen_key)

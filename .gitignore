@@ -1,5 +1,6 @@
 sample/*
 __pycache__/*
+release/__pycache__/*
 BinanceKeys-local.py
 BinanceKeys.py
 !release/BinanceKeys.py
