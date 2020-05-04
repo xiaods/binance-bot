@@ -66,7 +66,7 @@ def get_account_status():
     profit_balance = (float(account.get("totalNetAssetOfBtc")) *  current_btc_price) - total_base_balance
     # 利润率
     profit_percent = float(profit_balance / total_base_balance)
-    message += "*** 投入本金: {} USDT, {} BNB (约为{}: {:.2f}) ***\n".format(base_balance, base_bnb_balance, fiat_symbol, total_base_balance)
+    message += "*** 投入本金: {} USDT, {} BNB (约为{}: {:.2f}) ***\n".format(base_balance, base_bnb_balance, fiat_symbol, total_base_balance * fiat_price)
     message += "*** 日累计盈亏: {0:.2f} USDT(约为{1}: {2:.2f} )，日利润率{3:.3%} ***\n\n".format(profit_balance, fiat_symbol, float(profit_balance * fiat_price), profit_percent)
     message += "-"*30
     message += "\n杠杆账号资产详情：\n"
