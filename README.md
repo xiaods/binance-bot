@@ -1,24 +1,26 @@
-## Automate trading bot for binance
+## QCat Automated Crypto Trading bot
 
-### install python-binance client
-
+### 更新依赖库
 ```bash
 apt-get update
 apt-get install python3-pip
 pip3 install python-binance
 ```
 
-### Update your binance api keys
+### 更新配置
 
-update BinanceKeys.py  api_key
+BinanceKeys.py： 币安交易所key/ secret
+settings.py: 邮件服务器配置
 
 ### 部署安装Bot
 
-直接复制release目录下程序到主机上即可：
+bash bundle.sh 生成安装包
 
 start.sh  启动机器人
 stop.sh  暂停机器人
 top.sh  查询当前账户挂单状态
+mail.sh  发盈利报告邮件，12小时统计发送一次
+mailstop.sh  停止邮件
 
 
 ### How do I protect my Python source code?
@@ -30,9 +32,10 @@ top.sh  查询当前账户挂单状态
 专业工具：https://github.com/Hnfull/Intensio-Obfuscator
 
 
-### 发布安装包
+### 发布安装包步骤
 
-zip -q -r -e -o qcat-release.zip ./release 
+1. bash copyfile.sh
+2. bash bundle.sh
 
 
 
