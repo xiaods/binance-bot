@@ -20,14 +20,17 @@ API_KEY = BinanceKey1['api_key']
 API_SECRET = BinanceKey1['api_secret']
 client = Client(API_KEY, API_SECRET)
 
-# step0 初始化变化
+# step0 初始化参数，请咨询核对调优
 symbol = 'EOSUSDT'
 eos_symbol = 'EOS'
 usdt_symbol = 'USDT'
 loan = 200
 depth = 10
 qty = loan / depth
-max_margins = (depth * 2) * (0.6)
+# 最大交易对
+max_margins = (depth * 2) * float(0.6)
+# 账户币余额必须大于30%才能交易
+free_coin_limit_percentile = float(0.3)
 
 def run():
     initialize_arb()
@@ -82,8 +85,8 @@ def new_margin_order(symbol,qty):
     for asset in userAssets:
         if asset.get('asset') == eos_symbol:
             free_coin = float(asset.get('free'))
-    # 规则：账户币余额必须大于30%才能交易
-    if free_coin < loan * float(0.3):
+    # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
+    if free_coin < loan * free_coin_limit_percentile:
         print("Current Account coin balance is less then 30%. don't do order anymore.")
         return
 
@@ -137,7 +140,7 @@ def loan_asset(eos_symbol, qty):
         print('don\'t need loan, original loan: {}'.format(origin_loan))
         pass
     else:
-        transaction = client.create_margin_loan(asset=eos_symbol, 
+        transaction = client.create_margin_loan(asset=eos_symbol,
                                             amount=qty)
         print(transaction)
 
@@ -166,8 +169,8 @@ def process_message(msg):
             new_margin_order(symbol,qty)
 
 '''
-Purpose: Keepalive a user data stream to prevent a time out. 
-User data streams will close after 60 minutes. 
+Purpose: Keepalive a user data stream to prevent a time out.
+User data streams will close after 60 minutes.
 It's recommended to send a ping about every 30 minutes.
 '''
 def get_margin_stream_keepalive(listen_key):
