@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo current bot status
-echo ======================
+echo "Get Current Orders"
+echo "======================"
 
 python3 BinanceOrders.py

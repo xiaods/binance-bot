@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo current bot status
-echo ======================
+echo get current profit report
+echo ===========================
 
 
 python3 BinanceTop.py
