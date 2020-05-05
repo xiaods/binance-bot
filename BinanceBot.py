@@ -82,7 +82,7 @@ def initialize_arb():
     global bm, conn_key
     bm = BinanceSocketManager(client)
     conn_key = bm.start_margin_socket(process_message)
-    logger.info("websocket Conn key: {}" % conn_key)
+    logger.info("websocket Conn key: {}".format(conn_key) )
     bm.start()
 
     # 30分钟ping user websocket，key可以存活1个小时
@@ -130,10 +130,13 @@ def new_margin_order(symbol,qty):
 
 def cancel_all_margin_orders(symbol):
     orders = client.get_open_margin_orders(symbol=symbol)
+    cancel_message = "取消挂单：\n"
     for o in orders:
         result = client.cancel_margin_order(symbol=symbol,
                                             orderId=o.get('orderId'))
-        logger.info("取消挂单：\n\n" % result)
+        cancel_message += result
+
+    logger.info(cancel_message)
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
@@ -178,7 +181,7 @@ def process_message(msg):
         global conn_key
         bm.stop_socket(conn_key)
         conn_key = bm.start_margin_socket(process_message)
-        logger.info("renewer websocket Conn key: " + conn_key)
+        logger.info("renewer websocket Conn key: {}".format(conn_key))
     else:
         # process message normally
         # 单边出现，等待交易员操作，保持当前挂单
