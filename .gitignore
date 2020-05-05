@@ -1,4 +1,5 @@
-top.sh
+*.sh
+!scripts/*.sh
 qcat-release-*
 settings-local.py
 sample/*
