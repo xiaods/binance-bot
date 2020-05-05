@@ -4,4 +4,4 @@ echo current bot status
 echo ======================
 
 
-python3 BinanceClient.py
+python3 BinanceTop.py
