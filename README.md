@@ -38,4 +38,7 @@ mailstop.sh  停止邮件
 2. bash bundle.sh
 
 
+### BinanceOrders 依赖类库
+pip install PrettyTable
+
 
