@@ -12,23 +12,23 @@ from binance.client import Client
 from binance.enums import *
 from binance.websockets import BinanceSocketManager
 from settings import ZohoMail
-from BinanceKeys import BinanceKey1
 
+from settings import MarginAccount
+from BinanceKeys import BinanceKey1
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret)
 
 # 配置参数
-symbol = 'EOSUSDT'
-coin_symbol = 'EOS'
-usdt_symbol = 'USDT'
-bnb_symbol = 'BNB'
+symbol = MarginAccount['pair_symbol']
+coin_symbol = MarginAccount['eos_symbol']
+usdt_symbol = MarginAccount['usdt_symbol']
+bnb_symbol = MarginAccount['bnb_symbol']
 max_margins = 15
 # 投入本金，手工统计
-base_balance = 1134
-fiat_symbol = 'CNY'
-fiat_price = 7.1
-
+base_balance = MarginAccount['base_balance']
+fiat_symbol = MarginAccount['fiat_symbol']
+fiat_price = MarginAccount['fiat_price']
 
 
 def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content):
