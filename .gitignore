@@ -1,3 +1,4 @@
+release
 *.sh
 *.log
 !scripts/*.sh
@@ -5,10 +6,8 @@ qcat-release-*
 settings-local.py
 sample/*
 __pycache__/*
-release/__pycache__/*
 BinanceKeys-local.py
 BinanceKeys.py
-!release/BinanceKeys.py
 CryptoBot_DataLog.txt
 encrypt/*
 *.pye
