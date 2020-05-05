@@ -130,13 +130,13 @@ def new_margin_order(symbol,qty):
 
 def cancel_all_margin_orders(symbol):
     orders = client.get_open_margin_orders(symbol=symbol)
-    cancel_message = "取消挂单：\n"
+    logger.info("取消挂单：\n")
+
     for o in orders:
         result = client.cancel_margin_order(symbol=symbol,
                                             orderId=o.get('orderId'))
-        cancel_message += result
+        logger.info("{}".format(result))
 
-    logger.info(cancel_message)
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
