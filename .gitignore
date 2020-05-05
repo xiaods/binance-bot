@@ -1,4 +1,5 @@
 *.sh
+*.log
 !scripts/*.sh
 qcat-release-*
 settings-local.py
