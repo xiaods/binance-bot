@@ -46,7 +46,8 @@ def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content)
     server.sendmail(sender, recipient, message.as_string()) #发送
     server.quit()
     print("SEND")
-  except:
+  except Exception as e:
+    print(e)
     print("SEND FAILED")
 
 def run():
