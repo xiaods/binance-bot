@@ -1,7 +1,8 @@
 #!/bin/sh
 
-echo get current profit report
-echo ===========================
-
+echo "get current profit report"
+echo "==========================="
 
 python3 BinanceTop.py
+
+echo "Done!"
