@@ -183,7 +183,7 @@ def term_sig_handler(signum, frame):
     sys.exit()
 
 def data_log_to_file(message):
-    with open('CryptoBot_DataLog.txt', 'a+') as f:
+    with open('qcat_data.log', 'a+') as f:
         f.write(message)
 
 if __name__ == "__main__":
