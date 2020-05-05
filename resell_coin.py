@@ -30,7 +30,7 @@ def repay_coin(qty):
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
 
-    sell_price = float(ticker.get('askPrice'))*float(1+0.001)
+    sell_price = float(ticker.get('askPrice'))
     sell_price = '%.4f' % sell_price
     
     sell_order = client.create_margin_order(symbol=symbol, 

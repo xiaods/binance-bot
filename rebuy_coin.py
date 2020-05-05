@@ -29,7 +29,7 @@ def repay_coin(qty):
     ticker = client.get_orderbook_ticker(symbol=symbol)
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
-    buy_price = float(ticker.get('bidPrice'))*float(1-0.001)
+    buy_price = float(ticker.get('bidPrice'))
     buy_price = '%.4f' % buy_price
 
 
