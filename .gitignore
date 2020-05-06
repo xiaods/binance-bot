@@ -1,5 +1,7 @@
 release
 *.sh
+!./bundle.sh
+!./copyfiles.sh
 *.log
 !scripts/*.sh
 qcat-release-*
