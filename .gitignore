@@ -1,8 +1,13 @@
 release
-*.sh
-!./bundle.sh
-!./copyfiles.sh
 *.log
+!bundle.sh
+mail.sh
+mailstop.sh
+orders.sh
+setup.sh
+start.sh
+stop.sh
+top.sh
 !scripts/*.sh
 qcat-release-*
 settings.py
