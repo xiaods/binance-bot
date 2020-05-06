@@ -4,6 +4,7 @@ release
 !scripts/*.sh
 qcat-release-*
 settings-local.py
+settings.py
 sample/*
 __pycache__/*
 BinanceKeys-local.py

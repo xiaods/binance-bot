@@ -29,7 +29,7 @@ max_margins = 15
 base_balance = MarginAccount['base_balance']
 fiat_symbol = MarginAccount['fiat_symbol']
 fiat_price = MarginAccount['fiat_price']
-
+base_bnb_balance = MarginAccount['base_bnb_balance']
 
 def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content):
   try:
@@ -51,7 +51,7 @@ def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content)
     print("SEND FAILED")
 
 def run():
-    while True:
+    # while True:
         #配置
         #__time_____
         ehour=11 #定时小时
@@ -76,26 +76,29 @@ def run():
         e_content += get_account_status()
         
         #操作
-        if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
-            print ("START")
-            eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
-            print(cur_time)
+        # if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
+        print ("START")
+        eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
+        print(cur_time)
         # sleep 1 second
-        time.sleep(1)
+        # time.sleep(1)
 
 
 def get_account_status():
-    btcusdt_avg_price = client.get_avg_price(symbol='BTCUSDT')
+    coinusdt_avg_price = client.get_avg_price(symbol=symbol)
     bnbusdt_avg_price = client.get_avg_price(symbol='BNBUSDT')
-    current_btc_price = float(btcusdt_avg_price.get('price'))
+    btcusdt_avg_price = client.get_avg_price(symbol='BTCUSDT')
+    current_coin_price = float(coinusdt_avg_price.get('price'))
     current_bnb_price = float(bnbusdt_avg_price.get('price'))
+    current_btc_price = float(btcusdt_avg_price.get('price'))
     message = "QCat Auto Trading bot\n"
     message += "-"*30 
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-    message += "\n统计时间：%s" % dt_string
-    message += "\n当前BTC价格: {:.2f} USDT\n".format(current_btc_price)
-    message += "当前BNB价格: {:.2f} USDT\n\n".format(current_bnb_price)
+    message += "\n统计时间：%s\n" % dt_string
+    message += "当前{}价格: {:.2f} USDT\n".format(coin_symbol, current_coin_price)
+    message += "当前 BTC 价格: {:.2f} USDT\n".format(current_btc_price)
+    message += "当前 BNB 价格: {:.2f} USDT\n\n".format(current_bnb_price)
 
     # 计算账户信息 start
     account = client.get_margin_account()
@@ -117,7 +120,6 @@ def get_account_status():
     # 计算账号信息 end
 
     # 总投入成本
-    base_bnb_balance = float(bnb_free_coin)
     total_base_balance = float(base_balance) + float(base_bnb_balance * current_bnb_price)
     # 利润
     profit_balance = (float(account.get("totalNetAssetOfBtc")) *  current_btc_price) - total_base_balance
@@ -133,6 +135,7 @@ def get_account_status():
 
     message += "当前帐户可用现金{0}是: {1}\n".format(usdt_symbol, float(free_cash) ) 
     message += "当前账户可用代币{0}是: {1}\n".format(coin_symbol, float(free_coin) )
+    message += "当前账户可用{0}是: {1}\n".format(bnb_symbol, float(bnb_free_coin) )
     message += "-"*30
     message += "\n当前借入{}资产是{}\n".format(coin_symbol, loan_coin)
     message += "当前{}的净资产是{}\n".format(coin_symbol, net_coin)
