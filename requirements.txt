@@ -1,0 +1,2 @@
+prettytable==0.7.2
+python-binance==0.7.5
