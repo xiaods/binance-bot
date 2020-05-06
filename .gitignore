@@ -1,6 +1,5 @@
 release
 *.log
-!bundle.sh
 mail.sh
 mailstop.sh
 orders.sh
