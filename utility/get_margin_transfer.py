@@ -6,6 +6,8 @@ from binance.websockets import BinanceSocketManager
 import time
 from datetime import datetime
 
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from settings import BinanceKey1
 
 api_key = BinanceKey1['api_key']
