@@ -3,11 +3,8 @@ release
 *.log
 !scripts/*.sh
 qcat-release-*
-settings-local.py
 settings.py
 sample/*
 __pycache__/*
-BinanceKeys-local.py
-BinanceKeys.py
 encrypt/*
 *.pye
