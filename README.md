@@ -11,7 +11,7 @@ bash setup.sh #初始化安装
 settings.py   #bot全局配置，运行前务必配置
 
 ### 打包安装
-bash copyfile.sh 复制文件
+bash copyfiles.sh 复制文件
 bash bundle.sh 生成安装包
 
 start.sh  启动机器人
