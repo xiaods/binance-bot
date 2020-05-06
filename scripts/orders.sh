@@ -3,7 +3,7 @@
 echo "Get Current Orders"
 echo "======================"
 
-python3 BinanceOrders.py
+python3 binance_orders.py
 
 
 echo "Done!"

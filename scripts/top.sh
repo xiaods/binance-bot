@@ -3,6 +3,6 @@
 echo "get current profit report"
 echo "==========================="
 
-python3 BinanceTop.py
+python3 binance_top.py
 
 echo "Done!"
