@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 from settings import MarginAccount
-from BinanceKeys import BinanceKey1
+from settings import BinanceKey1
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret)

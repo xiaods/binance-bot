@@ -21,7 +21,7 @@ from twisted.internet import reactor
 
 from settings import MarginAccount
 
-from BinanceKeys import BinanceKey1
+from settings import BinanceKey1
 API_KEY = BinanceKey1['api_key']
 API_SECRET = BinanceKey1['api_secret']
 client = Client(API_KEY, API_SECRET)
