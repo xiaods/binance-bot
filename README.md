@@ -3,8 +3,9 @@
 ### 更新依赖库
 ```bash
 apt-get update
-apt-get install python3-pip
+apt install python3-pip
 pip3 install python-binance
+pip3 install PrettyTable
 ```
 
 ### 更新配置
@@ -29,7 +30,7 @@ mailstop.sh  停止邮件
 
 选择：Dancing Links
 
-专业工具：https://github.com/Hnfull/Intensio-Obfuscator
+专业工具(only Linux)：https://github.com/Hnfull/Intensio-Obfuscator
 
 
 ### 发布安装包步骤
@@ -39,6 +40,6 @@ mailstop.sh  停止邮件
 
 
 ### BinanceOrders 依赖类库
-pip install PrettyTable
+pip3 install PrettyTable
 
 
