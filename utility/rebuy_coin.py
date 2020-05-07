@@ -19,12 +19,12 @@ symbol = 'EOSUSDT'
 coin_symbol = 'EOS'
 usdt_symbol = 'USDT'
 bnb_symbol = 'BNB'
-max_margins = 15
+max_qty = 40
 
 def run():
     print('='*30)
     print("\n购入{}，恢复Bot的最低风控阈值 >= 60 {}\n".format(coin_symbol, coin_symbol))
-    repay_coin(40)
+    repay_coin(max_qty)
     print("Done!")
 
 def repay_coin(qty):

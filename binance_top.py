@@ -65,7 +65,7 @@ def get_account_status():
 
     # 总投入成本
     total_base_balance = float(base_balance) + float(base_bnb_balance * current_bnb_price)
-    # 利润
+    # 利润,总资产-全部借款，USDT汇率
     profit_balance = (float(account.get("totalNetAssetOfBtc")) *  current_btc_price) - total_base_balance
     # 利润率
     profit_percent = float(profit_balance / total_base_balance)

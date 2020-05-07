@@ -19,12 +19,12 @@ symbol = 'BNBUSDT'
 coin_symbol = 'BNB'
 usdt_symbol = 'USDT'
 bnb_symbol = 'BNB'
-buy_qty = 10
+max_qty = 10
 
 def run():
     print('='*30)
     print("\n购入{}，手续费需要 {} {}\n".format(coin_symbol, buy_qty, coin_symbol))
-    repay_coin(buy_qty)
+    repay_coin(max_qty)
     print("Done!")
 
 def repay_coin(qty):
