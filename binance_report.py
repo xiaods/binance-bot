@@ -51,7 +51,7 @@ def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content)
     print("SEND FAILED")
 
 def run():
-    # while True:
+    while True:
         #配置
         #__time_____
         ehour=11 #定时小时
@@ -76,12 +76,12 @@ def run():
         e_content += get_account_status()
         
         #操作
-        # if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
-        print ("START")
-        eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
-        print(cur_time)
+        if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
+            print ("START")
+            eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
+            print(cur_time)
         # sleep 1 second
-        # time.sleep(1)
+        time.sleep(1)
 
 
 def get_account_status():
