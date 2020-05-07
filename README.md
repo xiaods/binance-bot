@@ -10,9 +10,8 @@ pip3 install -r requirements.txt
 bash setup.sh #初始化安装
 settings.py   #bot全局配置，运行前务必配置
 
-### 打包安装
-bash copyfiles.sh 复制文件
-bash bundle.sh 生成安装包
+### 打包发行安装包
+bash bundle.sh 生成安装包并发行zip格式包
 
 start.sh  启动机器人
 stop.sh  暂停机器人
