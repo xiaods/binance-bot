@@ -131,11 +131,11 @@ def stochrsi_order(symbol, qty):
         但是，由于频繁的交叉，可能会产生错误的信号。
         """
         global indicator
-        if int(newestcandleD) <= 20 and int(newestcandleK) > int(newestcandleD):
+        if float(newestcandleD) <= float(20) and float(newestcandleK) > float(newestcandleD):
             logger.info("LONG: K:{}> D:{}".format(newestcandleK, newestcandleD))
             indicator = "LONG"
             new_margin_order(symbol,qty)  #做多
-        if int(newestcandleD) >= 80 and int(newestcandleK) < int(newestcandleD):
+        if float(newestcandleD) >= float(80) and float(newestcandleK) < float(newestcandleD):
             logger.info("SHORT: K:{} < D:{}".format(newestcandleK, newestcandleD))
             indicator = "SHORT"
             new_margin_order(symbol,qty)  #做空
@@ -250,7 +250,7 @@ def loan_asset(eos_symbol, qty):
     userAssets = account.get('userAssets')
     origin_loan = float(0)
     for asset in userAssets:
-        if asset.get('asset') == 'EOS':
+        if asset.get('asset') == eos_symbol:
             origin_loan = float(asset.get('borrowed'))
     qty = qty - origin_loan
     if qty <= float(0):
