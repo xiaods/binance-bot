@@ -3,3 +3,4 @@ python-binance==0.7.5
 unicorn-binance-websocket-api==1.13.0
 TA-Lib
 pandas
+jhtalib

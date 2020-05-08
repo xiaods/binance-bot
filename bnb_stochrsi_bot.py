@@ -3,26 +3,9 @@ import pandas as pd
 import talib
 import numpy as np #computing multidimensionla arrays
 import datetime
-import urllib3
 import time
 from settings import BinanceKey1
 
-#################################### Logging #################################################
-import logging
-logging.basicConfig(filename='null',format='%(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-#create a file handler
-handler = logging.FileHandler('logfile.log')
-handler.setLevel(logging.INFO)
-
-#create a logging format
-title = logging.Formatter('%(message)s')
-handler.setFormatter(title)
-
-# add the handlers to the logger
-logger.addHandler(handler)
-##############################################################################################
 
 # Initialize Client and connect to Binance
 from binance.client import Client
@@ -39,10 +22,7 @@ def Stoch(close,high,low, smoothk, smoothd, n):
     return K, D
 
 #################################### Logging #################################################
-logger.info("Date                    Close         RSI           %K             %D")
-info = logging.Formatter('%(asctime)s %(message)s ','%Y-%m-%d %H:%M:%S')
-handler.setFormatter(info)
-logger.addHandler(handler)
+print("Date                    Close         RSI           %K             %D")
 ##############################################################################################
 
 # Main program
@@ -69,7 +49,7 @@ while True:
 
 #################################### End of Main #############################################
 # WARNING: If Logging is removed uncomment the next line.
-# time.sleep(1) # Sleep for 1 second. So IP is not rate limited. Can be faster. Up to 1200 requests per minute.
+    time.sleep(1) # Sleep for 1 second. So IP is not rate limited. Can be faster. Up to 1200 requests per minute.
 
 #################################### Logging #################################################
     newestcandlestart = df.timestart.astype(str).iloc[-1] #gets last time
@@ -79,13 +59,17 @@ while True:
     newestcandleK = df.MyStochrsiK.astype(str).iloc[-1] #gets last rsi
     newestcandleD = df.MyStochrsiD.astype(str).iloc[-1] #gets last rsi
 
-    #Sleeps every 29 seconds and wakes up to post to logger.
-    t = datetime.datetime.utcnow()
-    sleeptime = (t.second)
-    if sleeptime == 0 or sleeptime ==30:
-        logger.info(newestcandleclose + " "
+    print(newestcandleend + " " +newestcandleclose + " "
                     + newestcandleRSI + " "
                     + newestcandleK + " "
                     + newestcandleD )
-        time.sleep(28)
+    #Sleeps every 29 seconds and wakes up to post to logger.
+    # t = datetime.datetime.utcnow()
+    # sleeptime = (t.second)
+    # if sleeptime == 0 or sleeptime ==30:
+    #     logger.info(newestcandleclose + " "
+    #                 + newestcandleRSI + " "
+    #                 + newestcandleK + " "
+    #                 + newestcandleD )
+    # time.sleep(1)
 ##############################################################################################
