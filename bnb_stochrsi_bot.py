@@ -186,10 +186,10 @@ def new_margin_order(symbol,qty):
     # LONG or SHORT
     if indicator == "LONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
-        buy_price = '%.4f' % buy_price
+        buy_price = '%.2f' % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.2)
-        sell_price = '%.4f' % sell_price
+        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+        sell_price = '%.2f' % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
@@ -204,12 +204,16 @@ def new_margin_order(symbol,qty):
                                        quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
+
+        logger.info("做多：买单ID:{}, 价格：{}， 数量：{}",buy_order, buy_price, qty)
+        logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}",sell_order, sell_price, qty)
+
     elif indicator == "SHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.2)
-        buy_price = '%.4f' % buy_price
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+        buy_price = '%.2f' % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1)
-        sell_price = '%.4f' % sell_price
+        sell_price = '%.2f' % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
@@ -224,6 +228,8 @@ def new_margin_order(symbol,qty):
                                        quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
+        logger.info("做空：买单ID:{}, 价格：{}， 数量：{}",buy_order, buy_price, qty)
+        logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}",sell_order, sell_price, qty)
 
     else:
         print("NO CHANCE: indicator:{}".format(indicator))
