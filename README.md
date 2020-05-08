@@ -1,9 +1,35 @@
 ## QCat Automated Crypto Trading bot
 
 ### 更新依赖库
+please install ta-lib component
+
+```bash
+download from http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+
+untar tar -xvf ta-lib-0.4.0-src.tar.gz
+
+cd /../ta-lib
+
+./configure --prefix=/usr
+
+make
+
+sudo make install
+
+sudo apt upgrade
+
+pip install ta-lib or pip install TA-Lib
+
+Check import talib
+```
+
 ```bash
 apt-get update
 apt install python3-pip
+
+### rsi指标
+pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+pip3 install pandas -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 pip3 install -r requirements.txt
 ```
 ### 安装并配置
@@ -27,27 +53,3 @@ mailstop.sh  停止邮件
 
 专业工具(only Linux)：https://github.com/Hnfull/Intensio-Obfuscator
 
-### rsi指标
-pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
-pip3 install pandas -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
-
-
-### ta-lib install on ubuntu 18.04
-
-download from http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-
-untar tar -xvf ta-lib-0.4.0-src.tar.gz
-
-cd /../ta-lib
-
-./configure --prefix=/usr
-
-make
-
-sudo make install
-
-sudo apt upgrade
-
-pip install ta-lib or pip install TA-Lib
-
-Check import talib

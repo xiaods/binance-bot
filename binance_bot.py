@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 币安自动交易bot
-Python-Binance ( https://github.com/sammchardy/python-binance )
-pip install python-binance  (note: support python3)
-
+    网格+追逐盈利策略
 """
 import time
 from datetime import datetime
