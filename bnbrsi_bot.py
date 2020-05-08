@@ -28,7 +28,7 @@ logger.addHandler(handler)
 from binance.client import Client
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
-client = Client(api_key, api_secret)
+client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
 
 # StochasticRSI Function
 def Stoch(close,high,low, smoothk, smoothd, n):

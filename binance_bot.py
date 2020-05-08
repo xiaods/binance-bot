@@ -22,9 +22,10 @@ from twisted.internet import reactor
 from settings import MarginAccount
 
 from settings import BinanceKey1
-API_KEY = BinanceKey1['api_key']
-API_SECRET = BinanceKey1['api_secret']
-client = Client(API_KEY, API_SECRET)
+api_key = BinanceKey1['api_key']
+api_secret = BinanceKey1['api_secret']
+client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
+
 
 # logger初始化
 
