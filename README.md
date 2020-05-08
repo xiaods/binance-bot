@@ -3,35 +3,42 @@
 ### 更新依赖库
 please install ta-lib component
 
+RAM > 1G or add swap
+
 ```bash
-download from http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+# (增加4G)
+dd if=/dev/zero of=/tmp/mem.swap bs=1M count=4096
+free -m
 
-untar tar -xvf ta-lib-0.4.0-src.tar.gz
+mkswap /tmp/mem.swap
+swapon /tmp/mem.swap
+# 确认是否增加成功：
+free -m
+```
 
-cd /../ta-lib
+```bash
+sudo apt upgrade
+
+# download from 
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+
+tar -xvf ta-lib-0.4.0-src.tar.gz
+
+cd ta-lib
 
 ./configure --prefix=/usr
 
-make
+make && make install
 
-sudo make install
-
-sudo apt upgrade
-
-pip install ta-lib or pip install TA-Lib
-
-Check import talib
-```
-
-```bash
-apt-get update
 apt install python3-pip
-
 ### rsi指标
 pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+pip install ta-lib
+
 pip3 install pandas -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 pip3 install -r requirements.txt
 ```
+
 ### 安装并配置
 bash setup.sh #初始化安装
 settings.py   #bot全局配置，运行前务必配置
