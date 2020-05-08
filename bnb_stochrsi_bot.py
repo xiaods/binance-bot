@@ -102,8 +102,8 @@ def stochrsi_order(symbol, qty):
         candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
         df = pd.DataFrame(candles)
         df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
-        df.timestart = [datetime.datetime.fromtimestamp(i/1000) for i in df.timestart.values]
-        df.timeend = [datetime.datetime.fromtimestamp(i/1000) for i in df.timeend.values]
+        df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
+        df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
 
         # Compute RSI after fixing data
         float_data = [float(x) for x in df.close.values]
@@ -131,11 +131,11 @@ def stochrsi_order(symbol, qty):
         但是，由于频繁的交叉，可能会产生错误的信号。
         """
         global indicator
-        if newestcandleD <= 20 and newestcandleK > newestcandleD:
+        if int(newestcandleD) <= 20 and int(newestcandleK) > int(newestcandleD):
             logger.info("LONG: K:{}> D:{}".format(newestcandleK, newestcandleD))
             indicator = "LONG"
             new_margin_order(symbol,qty)  #做多
-        if newestcandleD >= 80 and newestcandleK < newestcandleD:
+        if int(newestcandleD) >= 80 and int(newestcandleK) < int(newestcandleD):
             logger.info("SHORT: K:{} < D:{}".format(newestcandleK, newestcandleD))
             indicator = "SHORT"
             new_margin_order(symbol,qty)  #做空
