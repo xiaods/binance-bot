@@ -53,10 +53,13 @@ usdt_symbol = MarginAccount['usdt_symbol']
 loan = MarginAccount['loan']
 depth = MarginAccount['depth']
 qty = loan / depth
+base_balance = MarginAccount['base_balance']
 # 最大交易对
 max_margins = (depth * 2) * float(0.6)
 # 账户币余额必须大于30%才能交易
 free_coin_limit_percentile = float(0.3)
+# 账户余额必须大于30%才能交易
+free_cash_limit_percentile = float(0.3)
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -97,48 +100,49 @@ def initialize_arb():
 
 def stochrsi_order(symbol, qty):
     # Main program
-    while True:
-        # Get Binance Data into dataframe
-        candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
-        df = pd.DataFrame(candles)
-        df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
-        df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
-        df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
+    # Get Binance Data into dataframe
+    candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
+    df = pd.DataFrame(candles)
+    df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
+    df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
+    df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
 
-        # Compute RSI after fixing data
-        float_data = [float(x) for x in df.close.values]
-        np_float_data = np.array(float_data)
-        rsi = talib.RSI(np_float_data, 14)
-        df['rsi'] = rsi
+    # Compute RSI after fixing data
+    float_data = [float(x) for x in df.close.values]
+    np_float_data = np.array(float_data)
+    rsi = talib.RSI(np_float_data, 14)
+    df['rsi'] = rsi
 
-        # Compute StochRSI using RSI values in Stochastic function
-        mystochrsi = Stoch(df.rsi, df.rsi, df.rsi, 3, 3, 14)
-        df['MyStochrsiK'],df['MyStochrsiD'] = mystochrsi
-
-        time.sleep(1) # Sleep for 1 second. So IP is not rate limited. Can be faster. Up to 1200 requests per minute.
+    # Compute StochRSI using RSI values in Stochastic function
+    mystochrsi = Stoch(df.rsi, df.rsi, df.rsi, 3, 3, 14)
+    df['MyStochrsiK'],df['MyStochrsiD'] = mystochrsi
 
 
-        newestcandlestart = df.timestart.astype(str).iloc[-1] #gets last time
-        newestcandleend = df.timeend.astype(str).iloc[-1] #gets current time?
-        newestcandleclose = df.close.iloc[-1] #gets last close
-        newestcandleRSI = df.rsi.astype(str).iloc[-1] #gets last rsi
-        newestcandleK = df.MyStochrsiK.astype(str).iloc[-1] #gets last rsi
-        newestcandleD = df.MyStochrsiD.astype(str).iloc[-1] #gets last rsi
+    newestcandlestart = df.timestart.astype(str).iloc[-1] #gets last time
+    newestcandleend = df.timeend.astype(str).iloc[-1] #gets current time?
+    newestcandleclose = df.close.iloc[-1] #gets last close
+    newestcandleRSI = df.rsi.astype(str).iloc[-1] #gets last rsi
+    newestcandleK = df.MyStochrsiK.astype(str).iloc[-1] #gets last rsi
+    newestcandleD = df.MyStochrsiD.astype(str).iloc[-1] #gets last rsi
 
-        """
+    """
         当%K线和%D线相交时，也会产生买入和卖出信号：
         当%K线在%D线上方交叉时，产生买入信号，当%K线在%D线下方交叉时，产生卖出信号。
         但是，由于频繁的交叉，可能会产生错误的信号。
-        """
-        global indicator
-        if float(newestcandleD) <= float(20) and float(newestcandleK) > float(newestcandleD):
-            logger.info("LONG: K:{}> D:{}".format(newestcandleK, newestcandleD))
-            indicator = "LONG"
-            new_margin_order(symbol,qty)  #做多
-        if float(newestcandleD) >= float(80) and float(newestcandleK) < float(newestcandleD):
-            logger.info("SHORT: K:{} < D:{}".format(newestcandleK, newestcandleD))
-            indicator = "SHORT"
-            new_margin_order(symbol,qty)  #做空
+    """
+    global indicator
+    if float(newestcandleD) <= float(20) and float(newestcandleK) > float(newestcandleD):
+        logger.info("LONG: K:{}> D:{}".format(newestcandleK, newestcandleD))
+        indicator = "LONG"
+        new_margin_order(symbol,qty)  #做多
+    elif float(newestcandleD) >= float(80) and float(newestcandleK) < float(newestcandleD):
+        logger.info("SHORT: K:{} < D:{}".format(newestcandleK, newestcandleD))
+        indicator = "SHORT"
+        new_margin_order(symbol,qty)  #做空
+    else:
+        logger.info("NORMAL: K:{} < D:{}".format(newestcandleK, newestcandleD))
+        indicator = "NORMAL"
+        new_margin_order(symbol,qty)  #正常网格
 
 def process_message(msg):
     if msg['e'] == 'error':
@@ -161,9 +165,9 @@ def process_message(msg):
         # 处理event executionReport
         if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol:
             logger.info(msg)
-        # 当有交易成功的挂单，挂起新的网格对手单
+        # 当有交易成功的挂单，挂起新的RSI对手单
         if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol and msg.get('X') == ORDER_STATUS_FILLED:
-            new_margin_order(pair_symbol, qty)
+            stochrsi_order(pair_symbol,qty)
 
 def new_margin_order(symbol,qty):
     # 当前报价口的买卖价格
@@ -175,12 +179,18 @@ def new_margin_order(symbol,qty):
     account = client.get_margin_account()
     userAssets = account.get('userAssets')
     free_coin = float(0)
+    free_cash = float(0)
     for asset in userAssets:
         if asset.get('asset') == coin_symbol:
             free_coin = float(asset.get('free'))
+        if asset.get('asset') == usdt_symbol:
+            free_cash = asset.get('free')
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then 30%. don't do order anymore.")
+        return
+    if free_cash < base_balance * free_cash_limit_percentile:
+        logger.warning("Current Account base balance is less then 30%. don't do order anymore.")
         return
 
     # LONG or SHORT
@@ -205,8 +215,8 @@ def new_margin_order(symbol,qty):
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
-        logger.info("做多：买单ID:{}, 价格：{}， 数量：{}",buy_order, buy_price, qty)
-        logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}",sell_order, sell_price, qty)
+        logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
 
     elif indicator == "SHORT":
         buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
@@ -228,9 +238,31 @@ def new_margin_order(symbol,qty):
                                        quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        logger.info("做空：买单ID:{}, 价格：{}， 数量：{}",buy_order, buy_price, qty)
-        logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}",sell_order, sell_price, qty)
+        logger.info("做空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
 
+    elif indicator == "NORMAL":
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+        buy_price = '%.2f' % buy_price
+
+        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+        sell_price = '%.2f' % sell_price
+
+        buy_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_BUY,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+        sell_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_SELL,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=sell_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+        logger.info("常单：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("常单：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
     else:
         print("NO CHANCE: indicator:{}".format(indicator))
 

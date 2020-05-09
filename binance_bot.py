@@ -47,10 +47,13 @@ usdt_symbol = MarginAccount['usdt_symbol']
 loan = MarginAccount['loan']
 depth = MarginAccount['depth']
 qty = loan / depth
+base_balance = MarginAccount['base_balance']
 # 最大交易对
 max_margins = (depth * 2) * float(0.6)
 # 账户币余额必须大于30%才能交易
 free_coin_limit_percentile = float(0.3)
+# 账户余额必须大于30%才能交易
+free_cash_limit_percentile = float(0.3)
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -105,12 +108,18 @@ def new_margin_order(symbol,qty):
     account = client.get_margin_account()
     userAssets = account.get('userAssets')
     free_coin = float(0)
+    free_cash = float(0)
     for asset in userAssets:
         if asset.get('asset') == coin_symbol:
             free_coin = float(asset.get('free'))
+        if asset.get('asset') == usdt_symbol:
+            free_cash = asset.get('free')
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then 30%. don't do order anymore.")
+        return
+    if free_cash < base_balance * free_cash_limit_percentile:
+        logger.warning("Current Account base balance is less then 30%. don't do order anymore.")
         return
 
     buy_order = client.create_margin_order(symbol=symbol,
