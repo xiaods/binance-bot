@@ -73,8 +73,6 @@ def initialize_arb():
     logger.info("\nExchange Status: {}" % status)
 
     # step1 创建对手单,第一入口
-    # 1.1 清空当前交易
-    cancel_all_margin_orders(pair_symbol)
     # 1.2 借出币
     loan_asset(coin_symbol,loan)
     # 创建新的交易
