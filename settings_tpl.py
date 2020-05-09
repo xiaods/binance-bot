@@ -13,7 +13,7 @@ ZohoMail = {'username': 'support@qcat.io',
 
 MarginAccount = {
     'pair_symbol': 'EOSUSDT',
-    'eos_symbol': 'EOS',
+    'coin_symbol': 'EOS',
     'usdt_symbol': 'USDT',
     'loan': 0,   # <-----借贷币的数量
     'depth': 1,   # <-----对手单深度数

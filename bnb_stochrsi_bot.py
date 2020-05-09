@@ -47,8 +47,8 @@ logger.setLevel(logging.INFO)
 ##############################################################################################
 
 # step0 初始化参数，请咨询核对调优
-symbol = MarginAccount['pair_symbol']  #<---交易对
-eos_symbol = MarginAccount['eos_symbol']
+pair_symbol = MarginAccount['pair_symbol']  #<---交易对
+coin_symbol = MarginAccount['coin_symbol']
 usdt_symbol = MarginAccount['usdt_symbol']
 loan = MarginAccount['loan']
 depth = MarginAccount['depth']
@@ -78,9 +78,9 @@ def initialize_arb():
 
     # step1 创建对手单,第一入口
     # 1.2 借出币
-    loan_asset(eos_symbol,loan)
+    loan_asset(coin_symbol,loan)
     # 监听Stoch RSI指标发动指标
-    stochrsi_order(symbol,qty)
+    stochrsi_order(pair_symbol,qty)
 
     # step2 监听杠杆交易
     global bm, conn_key
@@ -159,11 +159,11 @@ def process_message(msg):
             return
 
         # 处理event executionReport
-        if msg.get('e') == 'executionReport' and msg.get('s')  == symbol:
+        if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol:
             logger.info(msg)
         # 当有交易成功的挂单，挂起新的网格对手单
-        if msg.get('e') == 'executionReport' and msg.get('s')  == symbol and msg.get('X') == ORDER_STATUS_FILLED:
-            new_margin_order(symbol,qty)
+        if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol and msg.get('X') == ORDER_STATUS_FILLED:
+            new_margin_order(pair_symbol, qty)
 
 def new_margin_order(symbol,qty):
     # 当前报价口的买卖价格
@@ -176,7 +176,7 @@ def new_margin_order(symbol,qty):
     userAssets = account.get('userAssets')
     free_coin = float(0)
     for asset in userAssets:
-        if asset.get('asset') == eos_symbol:
+        if asset.get('asset') == coin_symbol:
             free_coin = float(asset.get('free'))
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
@@ -239,7 +239,7 @@ purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判�
 
 '''
 def is_max_margins(max_margins):
-    orders = client.get_open_margin_orders(symbol=symbol)
+    orders = client.get_open_margin_orders(symbol=pair_symbol)
     if len(orders) > max_margins:
         return True
     else:

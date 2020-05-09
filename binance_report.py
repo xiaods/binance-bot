@@ -20,8 +20,8 @@ api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret)
 
 # 配置参数
-symbol = MarginAccount['pair_symbol']
-coin_symbol = MarginAccount['eos_symbol']
+pair_symbol = MarginAccount['pair_symbol']
+coin_symbol = MarginAccount['coin_symbol']
 usdt_symbol = MarginAccount['usdt_symbol']
 bnb_symbol = MarginAccount['bnb_symbol']
 max_margins = 15
@@ -85,7 +85,7 @@ def run():
 
 
 def get_account_status():
-    coinusdt_avg_price = client.get_avg_price(symbol=symbol)
+    coinusdt_avg_price = client.get_avg_price(symbol=pair_symbol)
     bnbusdt_avg_price = client.get_avg_price(symbol='BNBUSDT')
     btcusdt_avg_price = client.get_avg_price(symbol='BTCUSDT')
     current_coin_price = float(coinusdt_avg_price.get('price'))
@@ -96,7 +96,7 @@ def get_account_status():
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
     message += "\n统计时间：%s\n" % dt_string
-    message += "当前{}价格: {:.2f} USDT\n".format(coin_symbol, current_coin_price)
+    message += "当前 {} 价格: {:.2f} USDT\n".format(coin_symbol, current_coin_price)
     message += "当前 BTC 价格: {:.2f} USDT\n".format(current_btc_price)
     message += "当前 BNB 价格: {:.2f} USDT\n\n".format(current_bnb_price)
 

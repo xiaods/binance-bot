@@ -15,8 +15,8 @@ api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
 
 # 配置参数
-symbol = MarginAccount['pair_symbol']
-coin_symbol = MarginAccount['eos_symbol']
+pair_symbol = MarginAccount['pair_symbol']
+coin_symbol = MarginAccount['coin_symbol']
 usdt_symbol = MarginAccount['usdt_symbol']
 bnb_symbol = MarginAccount['bnb_symbol']
 max_margins = 15
@@ -31,7 +31,7 @@ def run():
 
 
 def get_all_margin_orders():
-    orders = client.get_open_margin_orders(symbol=symbol)
+    orders = client.get_open_margin_orders(symbol=pair_symbol)
     
     tb = pt.PrettyTable()
     tb.field_names = ["orderId", "Qty", "Price", "Side","Symbol", "Time"]

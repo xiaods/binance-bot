@@ -13,8 +13,8 @@ api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
 
 # 配置参数
-symbol = MarginAccount['pair_symbol']
-coin_symbol = MarginAccount['eos_symbol']
+pair_symbol = MarginAccount['pair_symbol']
+coin_symbol = MarginAccount['coin_symbol']
 usdt_symbol = MarginAccount['usdt_symbol']
 bnb_symbol = MarginAccount['bnb_symbol']
 max_margins = 15
@@ -29,7 +29,7 @@ def run():
     get_account_status()
 
 def get_account_status():
-    coinusdt_avg_price = client.get_avg_price(symbol=symbol)
+    coinusdt_avg_price = client.get_avg_price(symbol=pair_symbol)
     bnbusdt_avg_price = client.get_avg_price(symbol='BNBUSDT')
     btcusdt_avg_price = client.get_avg_price(symbol='BTCUSDT')
     current_coin_price = float(coinusdt_avg_price.get('price'))
@@ -109,7 +109,7 @@ def process_message(msg):
     print(msg)
 
 def is_max_margins(max_margins):
-    orders = client.get_open_margin_orders(symbol=symbol)
+    orders = client.get_open_margin_orders(symbol=pair_symbol)
     if len(orders) > max_margins:
         return True
     else:
@@ -137,13 +137,13 @@ def repay_asset(coin_symbol, qty):
     print(transaction)
 
 def get_all_margin_orders():
-    orders = client.get_open_margin_orders(symbol=symbol)
+    orders = client.get_open_margin_orders(symbol=pair_symbol)
     print(orders)
 
 def cacel_all_margin_orders():
-    orders = client.get_open_margin_orders(symbol=symbol)
+    orders = client.get_open_margin_orders(symbol=pair_symbol)
     for o in orders:
-        result = client.cancel_margin_order(symbol=symbol,
+        result = client.cancel_margin_order(symbol=pair_symbol,
                                             orderId=o.get('orderId'))
         print(result)
 
@@ -159,7 +159,7 @@ def margin_account():
     print(eos_free, usdt_free)
 
 def new_margin_order():
-    ticker = client.get_orderbook_ticker(symbol=symbol)
+    ticker = client.get_orderbook_ticker(symbol=pair_symbol)
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
     buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
@@ -168,14 +168,14 @@ def new_margin_order():
     sell_price = float(ticker.get('askPrice'))*float(1+0.005)
     sell_price = '%.4f' % sell_price
 
-    buy_order = client.create_margin_order(symbol=symbol, 
+    buy_order = client.create_margin_order(symbol=pair_symbol, 
                                        side=SIDE_BUY, 
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=10.0, 
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
     
-    sell_order = client.create_margin_order(symbol=symbol, 
+    sell_order = client.create_margin_order(symbol=pair_symbol, 
                                        side=SIDE_SELL, 
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=10.0, 
