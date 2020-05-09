@@ -113,7 +113,7 @@ def new_margin_order(symbol,qty):
         if asset.get('asset') == coin_symbol:
             free_coin = float(asset.get('free'))
         if asset.get('asset') == usdt_symbol:
-            free_cash = asset.get('free')
+            free_cash = float(asset.get('free'))
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then 30%. don't do order anymore.")
