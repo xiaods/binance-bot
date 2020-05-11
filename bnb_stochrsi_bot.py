@@ -100,8 +100,8 @@ def initialize_arb():
 
 def stochrsi_order(symbol, qty):
     # Main program
-    # Get Binance Data into dataframe
-    candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
+    # Get Binance Data into dataframe, when k x d get correct indicator
+    candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_4HOUR)
     df = pd.DataFrame(candles)
     df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
     df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
