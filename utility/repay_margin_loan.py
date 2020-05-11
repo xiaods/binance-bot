@@ -9,14 +9,15 @@ from datetime import datetime
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from settings import BinanceKey1
+from settings import MarginAccount
 
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
 client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
 
 # 配置参数
-loan_qty=20
-coin_symbol = 'EOS'
+loan_qty = MarginAccount['loan']
+coin_symbol = MarginAccount['coin_symbol']
 
 
 def run():
