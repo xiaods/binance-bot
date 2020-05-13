@@ -1,6 +1,6 @@
 ## QCat Automated Crypto Trading bot
 
-### 更新依赖库
+### 对于小于4G内存的小机器，增加Swap
 please install ta-lib component
 
 RAM > 1G or add swap
@@ -16,8 +16,9 @@ swapon /tmp/mem.swap
 free -m
 ```
 
+### 安装RSI指标计算库依赖
 ```bash
-sudo apt upgrade
+apt-get upgrade
 
 # download from 
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
@@ -30,7 +31,7 @@ cd ta-lib
 
 make && make install
 
-apt install python3-pip
+apt-get install python3-pip
 ### rsi指标
 pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 pip install ta-lib
