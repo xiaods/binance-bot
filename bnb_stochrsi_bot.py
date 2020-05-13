@@ -55,11 +55,11 @@ depth = MarginAccount['depth']
 qty = loan / depth
 base_balance = MarginAccount['base_balance']
 # 最大交易对
-max_margins = (depth * 2) * float(0.6)
+max_margins = MarginAccount['max_margins']
 # 账户币余额必须大于30%才能交易
-free_coin_limit_percentile = float(0.3)
+free_coin_limit_percentile = MarginAccount['free_coin_limit_percentile']
 # 账户余额必须大于30%才能交易
-free_cash_limit_percentile = float(0.3)
+free_cash_limit_percentile = MarginAccount['free_cash_limit_percentile']
 
 # BinanceSocketManager 全局变量初始化
 bm = None
