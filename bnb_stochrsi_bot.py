@@ -131,16 +131,16 @@ def stochrsi_order(symbol, qty):
         但是，由于频繁的交叉，可能会产生错误的信号。
     """
     global indicator
-    if float(newestcandleK) <= float(30):
-        logger.info("SHORT: K:{}> D:{}".format(newestcandleK, newestcandleD))
+    if float(newestcandleRSI) <= float(30):
+        logger.info("SHORT: RSI:{} K:{} D:{}".format(newestcandleRSI,newestcandleK, newestcandleD))
         indicator = "SHORT"
         new_margin_order(symbol,qty)  #做空
-    elif float(newestcandleK) >= float(70):
-        logger.info("LONG: K:{} < D:{}".format(newestcandleK, newestcandleD))
+    elif float(newestcandleRSI) >= float(70):
+        logger.info("LONG: RSI:{} K:{} D:{}".format(newestcandleRSI,newestcandleK, newestcandleD))
         indicator = "LONG"
         new_margin_order(symbol,qty)  #做多
     else:
-        logger.info("NORMAL: K:{} < D:{}".format(newestcandleK, newestcandleD))
+        logger.info("NORMAL: RSI:{} K:{} D:{}".format(newestcandleRSI,newestcandleK, newestcandleD))
         indicator = "NORMAL"
         new_margin_order(symbol,qty)  #正常网格
 
