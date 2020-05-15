@@ -34,7 +34,7 @@ make && make install
 apt-get install python3-pip
 ### rsi指标
 pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
-pip install ta-lib
+pip3 install ta-lib
 
 pip3 install pandas -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 pip3 install -r requirements.txt
