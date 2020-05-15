@@ -19,6 +19,7 @@ free -m
 ### 安装RSI指标计算库依赖
 ```bash
 apt-get upgrade
+apt-get install build-essential
 
 # download from 
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
