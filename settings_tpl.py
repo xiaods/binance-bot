@@ -25,6 +25,7 @@ MarginAccount = {
     'max_margins': 20,  # <--------(depth * 2) * float(0.8), 最大交易对数量
     'free_coin_limit_percentile': 0.1,  #<-----最小可用币数量百分比， 20%
     'free_cash_limit_percentile': 0.1,  #<-----最小可用金额百分比， 20%
+    'price_accuracy': '%.4f',  #<----- 价格精度，交易需要指定。默认 .4f
  }
 
 BinanceKey1 = {'api_key': '< your api key>',

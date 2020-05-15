@@ -54,6 +54,8 @@ max_margins = MarginAccount['max_margins']
 free_coin_limit_percentile = MarginAccount['free_coin_limit_percentile']
 # 账户余额必须大于30%才能交易
 free_cash_limit_percentile = MarginAccount['free_cash_limit_percentile']
+# 价格精度
+price_accuracy = MarginAccount['price_accuracy']
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -97,10 +99,10 @@ def new_margin_order(symbol,qty):
     logger.info("Current bid price: {}".format(ticker.get('bidPrice')))
     logger.info("Current ask price: {}".format(ticker.get('askPrice')))
     buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
-    buy_price = '%.4f' % buy_price
+    buy_price = price_accuracy % buy_price
 
     sell_price = float(ticker.get('askPrice'))*float(1+0.005)
-    sell_price = '%.4f' % sell_price
+    sell_price = price_accuracy % sell_price
 
     #计算当前账号的币的余额够不够，账户币余额必须大于30%才能交易
     account = client.get_margin_account()

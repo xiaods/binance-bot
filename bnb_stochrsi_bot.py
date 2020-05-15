@@ -60,6 +60,8 @@ max_margins = MarginAccount['max_margins']
 free_coin_limit_percentile = MarginAccount['free_coin_limit_percentile']
 # 账户余额必须大于30%才能交易
 free_cash_limit_percentile = MarginAccount['free_cash_limit_percentile']
+# 价格精度
+price_accuracy = MarginAccount['price_accuracy']
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -196,10 +198,10 @@ def new_margin_order(symbol,qty):
     # LONG or SHORT
     if indicator == "LONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
-        buy_price = '%.2f' % buy_price
+        buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1+0.005)
-        sell_price = '%.2f' % sell_price
+        sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
@@ -220,10 +222,10 @@ def new_margin_order(symbol,qty):
 
     elif indicator == "SHORT":
         buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
-        buy_price = '%.2f' % buy_price
+        buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1)
-        sell_price = '%.2f' % sell_price
+        sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
@@ -243,10 +245,10 @@ def new_margin_order(symbol,qty):
 
     elif indicator == "NORMAL":
         buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
-        buy_price = '%.2f' % buy_price
+        buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1+0.005)
-        sell_price = '%.2f' % sell_price
+        sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
