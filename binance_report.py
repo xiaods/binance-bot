@@ -17,7 +17,7 @@ from settings import MarginAccount
 from settings import BinanceKey1
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
-client = Client(api_key, api_secret)
+client = Client(api_key, api_secret, {"verify": True, "timeout": 10000})
 
 # 配置参数
 pair_symbol = MarginAccount['pair_symbol']
