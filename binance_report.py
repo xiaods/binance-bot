@@ -96,7 +96,7 @@ def get_account_status():
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
     message += "\n统计时间：%s\n" % dt_string
-    message += "当前 {} 价格: {:.2f} USDT\n".format(coin_symbol, current_coin_price)
+    message += "当前 {} 价格: {:.4f} USDT\n".format(coin_symbol, current_coin_price)
     message += "当前 BTC 价格: {:.2f} USDT\n".format(current_btc_price)
     message += "当前 BNB 价格: {:.2f} USDT\n\n".format(current_bnb_price)
 
