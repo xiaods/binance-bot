@@ -56,6 +56,8 @@ free_coin_limit_percentile = MarginAccount['free_coin_limit_percentile']
 free_cash_limit_percentile = MarginAccount['free_cash_limit_percentile']
 # 价格精度
 price_accuracy = MarginAccount['price_accuracy']
+# 数量进度
+qty_accuracy = MarginAccount['qty_accuracy']
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -119,13 +121,13 @@ def new_margin_order(symbol,qty):
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
         if (loan * 0.5 * buy_price) < free_cash:
-            buy_coin_qty = int(loan * 0.5)
+            buy_coin_qty = float(qty_accuracy % (loan * 0.5))
             repay_asset(pair_symbol, coin_symbol, buy_coin_qty, "BUY")
         return
     if free_cash < base_balance * free_cash_limit_percentile:
         logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         if free_coin > loan:
-            sell_coin_qty = int(free_coin - loan)
+            sell_coin_qty = float(qty_accuracy % (free_coin - loan))
             repay_asset(pair_symbol, coin_symbol, sell_coin_qty, "SELL")
         return
 

@@ -26,6 +26,7 @@ MarginAccount = {
     'free_coin_limit_percentile': 0.1,  #<-----最小可用币数量百分比， 20%
     'free_cash_limit_percentile': 0.1,  #<-----最小可用金额百分比， 20%
     'price_accuracy': '%.4f',  #<----- 价格精度，交易需要指定。默认 .4f
+    'qty_accuracy': '%.2f', #<------ 数量进度， EOS是 2个， BTC是6个
  }
 
 BinanceKey1 = {'api_key': '< your api key>',
