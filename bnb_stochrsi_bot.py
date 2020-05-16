@@ -201,18 +201,15 @@ def new_margin_order(symbol,qty):
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
 
+        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+        sell_price = price_accuracy % sell_price
+
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-
-        logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
-
-    elif indicator == "SHORT":
-        sell_price = float(ticker.get('askPrice'))*float(1)
-        sell_price = price_accuracy % sell_price
 
         sell_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_SELL,
@@ -221,7 +218,32 @@ def new_margin_order(symbol,qty):
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
-        logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
+        logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
+
+    elif indicator == "SHORT":
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+        buy_price = price_accuracy % buy_price
+
+        sell_price = float(ticker.get('askPrice'))*float(1)
+        sell_price = price_accuracy % sell_price
+
+        buy_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_BUY,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+        sell_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_SELL,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=sell_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+        logger.info("做空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
 
     elif indicator == "NORMAL":
         buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
