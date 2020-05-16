@@ -190,6 +190,7 @@ def new_margin_order(symbol,qty):
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
+        repay_coin(pair_symbol, coin_symbol, loan * 0.5)
         return
     if free_cash < base_balance * free_cash_limit_percentile:
         logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
@@ -200,39 +201,18 @@ def new_margin_order(symbol,qty):
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
-        sell_price = price_accuracy % sell_price
-
         buy_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_BUY,
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=buy_price,
-                                       timeInForce=TIME_IN_FORCE_GTC)
-
-        sell_order = client.create_margin_order(symbol=symbol,
-                                       side=SIDE_SELL,
-                                       type=ORDER_TYPE_LIMIT,
-                                       quantity=qty,
-                                       price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
-        logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
 
     elif indicator == "SHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
-        buy_price = price_accuracy % buy_price
-
         sell_price = float(ticker.get('askPrice'))*float(1)
         sell_price = price_accuracy % sell_price
-
-        buy_order = client.create_margin_order(symbol=symbol,
-                                       side=SIDE_BUY,
-                                       type=ORDER_TYPE_LIMIT,
-                                       quantity=qty,
-                                       price=buy_price,
-                                       timeInForce=TIME_IN_FORCE_GTC)
 
         sell_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_SELL,
@@ -240,7 +220,7 @@ def new_margin_order(symbol,qty):
                                        quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        logger.info("做空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+
         logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty))
 
     elif indicator == "NORMAL":
@@ -267,6 +247,27 @@ def new_margin_order(symbol,qty):
         logger.info("常单：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
     else:
         print("NO CHANCE: indicator:{}".format(indicator))
+
+
+'''
+purpose: coin补仓, 提供50%的币的数量
+'''
+def repay_coin(pair_symbol, coin_symbol, qty):
+    ticker = client.get_orderbook_ticker(symbol=pair_symbol)
+    print("Current bid price: {}".format(ticker.get('bidPrice')))
+    print("Current ask price: {}".format(ticker.get('askPrice')))
+    buy_price = float(ticker.get('bidPrice'))
+    buy_price = '%.4f' % buy_price
+
+    buy_order = client.create_margin_order(symbol=pair_symbol, 
+                                       side=SIDE_BUY, 
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty, 
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+    logger.info("自动补仓代币 {}: {}, 补仓单价：{}".format(coin_symbol, qty, buy_price))
+
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
