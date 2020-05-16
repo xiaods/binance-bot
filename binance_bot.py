@@ -163,19 +163,19 @@ purpose: 自动借币
 if account.loan 有币:
     pass
 '''
-def loan_asset(eos_symbol, qty):
+def loan_asset(coin_symbol, qty):
     account = client.get_margin_account()
     userAssets = account.get('userAssets')
     origin_loan = float(0)
     for asset in userAssets:
-        if asset.get('asset') == 'EOS':
+        if asset.get('asset') == coin_symbol:
             origin_loan = float(asset.get('borrowed'))
     qty = qty - origin_loan
     if qty <= float(0):
         logger.info('don\'t need loan, original loan: {}'.format(origin_loan))
         pass
     else:
-        transaction = client.create_margin_loan(asset=eos_symbol,
+        transaction = client.create_margin_loan(asset=coin_symbol,
                                             amount=qty)
         logger.info(transaction)
 
