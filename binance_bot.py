@@ -173,7 +173,7 @@ def repay_asset(pair_symbol, coin_symbol, qty, type):
                                        quantity=qty, 
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        logger.info("自动兑换代币 {}: {}, 兑换单价：{}".format(coin_symbol, qty, buy_price))
+        logger.info("自动兑换代币 {}: {}, 兑换单价：{}".format(coin_symbol, qty, sell_price))
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
