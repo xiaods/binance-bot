@@ -257,7 +257,7 @@ def repay_coin(pair_symbol, coin_symbol, qty):
     print("Current bid price: {}".format(ticker.get('bidPrice')))
     print("Current ask price: {}".format(ticker.get('askPrice')))
     buy_price = float(ticker.get('bidPrice'))
-    buy_price = '%.4f' % buy_price
+    buy_price = price_accuracy % buy_price
 
     buy_order = client.create_margin_order(symbol=pair_symbol, 
                                        side=SIDE_BUY, 

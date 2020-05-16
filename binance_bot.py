@@ -117,6 +117,7 @@ def new_margin_order(symbol,qty):
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
         logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
+        repay_coin(pair_symbol, coin_symbol, loan * 0.5)
         return
     if free_cash < base_balance * free_cash_limit_percentile:
         logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
@@ -136,15 +137,25 @@ def new_margin_order(symbol,qty):
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
-def cancel_all_margin_orders(symbol):
-    orders = client.get_open_margin_orders(symbol=symbol)
-    logger.info("取消挂单：\n")
 
-    for o in orders:
-        result = client.cancel_margin_order(symbol=symbol,
-                                            orderId=o.get('orderId'))
-        logger.info("{}".format(result))
+'''
+purpose: coin补仓, 提供50%的币的数量
+'''
+def repay_coin(pair_symbol, coin_symbol, qty):
+    ticker = client.get_orderbook_ticker(symbol=pair_symbol)
+    print("Current bid price: {}".format(ticker.get('bidPrice')))
+    print("Current ask price: {}".format(ticker.get('askPrice')))
+    buy_price = float(ticker.get('bidPrice'))
+    buy_price = price_accuracy % buy_price
 
+    buy_order = client.create_margin_order(symbol=pair_symbol, 
+                                       side=SIDE_BUY, 
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty, 
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+    logger.info("自动补仓代币 {}: {}, 补仓单价：{}".format(coin_symbol, qty, buy_price))
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
