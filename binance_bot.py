@@ -116,10 +116,10 @@ def new_margin_order(symbol,qty):
             free_cash = float(asset.get('free'))
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
-        logger.warning("Current Account coin balance is less then 30%. don't do order anymore.")
+        logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
         return
     if free_cash < base_balance * free_cash_limit_percentile:
-        logger.warning("Current Account base balance is less then 30%. don't do order anymore.")
+        logger.warning("Current Account base balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         return
 
     buy_order = client.create_margin_order(symbol=symbol,

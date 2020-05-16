@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-    StochasticRSI 策略， K线 < 20，买入，> 80 卖出。  D线是K平滑均值线，辅助提供当前盘是涨还是跌的趋势
+    StochasticRSI 策略， K线 < 20，卖出，> 80 买入。  D线是K平滑均值线，辅助提供当前盘是涨还是跌的趋势
     当K > D， 涨势， D > K ， 跌势
 """
 import pandas as pd
@@ -133,11 +133,11 @@ def stochrsi_order(symbol, qty):
         但是，由于频繁的交叉，可能会产生错误的信号。
     """
     global indicator
-    if float(newestcandleRSI) <= float(30):
+    if float(newestcandleK) <= float(20) and newestcandleK <= newestcandleD:
         logger.info("SHORT: RSI:{} K:{} D:{}".format(newestcandleRSI,newestcandleK, newestcandleD))
         indicator = "SHORT"
         new_margin_order(symbol,qty)  #做空
-    elif float(newestcandleRSI) >= float(70):
+    elif float(newestcandleK) >= float(80) and newestcandleK >= newestcandleD:
         logger.info("LONG: RSI:{} K:{} D:{}".format(newestcandleRSI,newestcandleK, newestcandleD))
         indicator = "LONG"
         new_margin_order(symbol,qty)  #做多
@@ -189,10 +189,10 @@ def new_margin_order(symbol,qty):
             free_cash = float(asset.get('free'))
     # 规则：账户币余额必须大于 free_coin_limit_percentile 才能交易
     if free_coin < loan * free_coin_limit_percentile:
-        logger.warning("Current Account coin balance is less then 30%. don't do order anymore.")
+        logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
         return
     if free_cash < base_balance * free_cash_limit_percentile:
-        logger.warning("Current Account base balance is less then 30%. don't do order anymore.")
+        logger.warning("Current Account base balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         return
 
     # LONG or SHORT
