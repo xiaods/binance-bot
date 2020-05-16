@@ -92,8 +92,9 @@ def initialize_arb():
         get_margin_stream_keepalive(conn_key)
         time.sleep(60 * 30)
 
-def new_margin_order(symbol,qty):
 
+
+def new_margin_order(symbol,qty):
     # 当前报价口的买卖价格
     ticker = client.get_orderbook_ticker(symbol=symbol)
     logger.info("Current bid price: {}".format(ticker.get('bidPrice')))
@@ -141,7 +142,9 @@ def new_margin_order(symbol,qty):
                                        quantity=qty,
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-
+    
+    logger.info("常单：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+    logger.info("常单：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
 
 '''
 purpose: coin补仓, 提供50%的币的数量
