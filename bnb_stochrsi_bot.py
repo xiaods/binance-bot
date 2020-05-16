@@ -192,7 +192,7 @@ def new_margin_order(symbol,qty):
         logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
         return
     if free_cash < base_balance * free_cash_limit_percentile:
-        logger.warning("Current Account base balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
+        logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         return
 
     # LONG or SHORT
