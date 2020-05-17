@@ -52,36 +52,40 @@ def eSend(sender,recipient,username,password,smtpserver,port, subject,e_content)
 
 def run():
     while True:
-        #配置
-        #__time_____
-        ehour=11 #定时小时
-        emin=49 #定时分钟
-        esec=50 #定时秒
-        current_time = time.localtime(time.time())   #当前时间date
-        cur_time = time.strftime('%H:%M', time.localtime(time.time()))       #当前时间str
+        try:
+            #配置
+            #__time_____
+            ehour=11 #定时小时
+            emin=49 #定时分钟
+            esec=50 #定时秒
+            current_time = time.localtime(time.time())   #当前时间date
+            cur_time = time.strftime('%D:%H:%M', time.localtime(time.time()))       #当前时间str
 
-        #__email_____
-        sender = 'support@qcat.io' # 发件人邮箱
-        recipient = ZohoMail['recipient'] # 收件人邮箱，可以多个（列表形式）群发
-        username = ZohoMail['username'] # 发件人姓名
-        password = ZohoMail['password'] # smtp密码，qq是给你分配一串，163是自己设置
-        smtpserver = ZohoMail['smtpserver'] # 邮箱服务器
-        serverport  = ZohoMail['serverport']
+            #__email_____
+            sender = 'support@qcat.io' # 发件人邮箱
+            recipient = ZohoMail['recipient'] # 收件人邮箱，可以多个（列表形式）群发
+            username = ZohoMail['username'] # 发件人姓名
+            password = ZohoMail['password'] # smtp密码，qq是给你分配一串，163是自己设置
+            smtpserver = ZohoMail['smtpserver'] # 邮箱服务器
+            serverport  = ZohoMail['serverport']
 
-        now = datetime.now()
-        dt_string = now.strftime("%Y-%m-%d")
-        subject = "QCat Auto Trading Bot Report - {}".format(dt_string)  #邮件标题
-        e_content = '{0:^27}\n{1:^27}\n{2:^25}\n{3:^25}'.format('i','/  \\','(-----)','(--------)')  #邮件正文
-        e_content += "今天行情不错奥，Qcat自动交易机器人帮您统计了一下收益：\n\n"
-        e_content += get_account_status()
+            now = datetime.now()
+            dt_string = now.strftime("%Y-%m-%d")
+            subject = "QCat Auto Trading Bot Report - {}".format(dt_string)  #邮件标题
+            e_content = '{0:^27}\n{1:^27}\n{2:^25}\n{3:^25}'.format('i','/  \\','(-----)','(--------)')  #邮件正文
+            e_content += "今天行情不错奥，Qcat自动交易机器人帮您统计了一下收益：\n\n"
+            e_content += get_account_status()
         
-        #操作
-        if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
-            print ("START")
-            eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
-            print(cur_time)
-        # sleep 1 second
-        time.sleep(1)
+            #操作
+            if ((current_time.tm_hour == ehour) and (current_time.tm_min == emin) and (current_time.tm_sec == esec)):
+                print ("START")
+                eSend(sender, recipient, username, password, smtpserver, serverport, subject, e_content)
+                print(cur_time)
+            # sleep 1 second
+            time.sleep(1)
+        except Exception as e:
+            print(e)
+            print("SEND FAILED")
 
 
 def get_account_status():
