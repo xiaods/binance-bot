@@ -161,6 +161,9 @@ def kdj_signal_trading(symbol):
         indicator = "SHORT" #做空
     else:
         indicator = "NORMAL"   #正常网格, bypass
+    
+    #  下单
+    new_margin_order(symbol,qty) 
 
 """
 下单函数，做空，做多
