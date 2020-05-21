@@ -161,11 +161,11 @@ def kdj_signal_trading(symbol):
     if (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
         int(np_low_data[-1]) <= int(cur_dn) and len(long_order) == 0:
         indicator = "LONG"  #做多
-        new_margin_order(symbol,qty)  #  下单
+        new_margin_order(symbol,qty,indicator)  #  下单
     elif (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
         int(np_high_data[-1]) >= int(cur_up) and len(short_order) == 0:
         indicator = "SHORT" #做空
-        new_margin_order(symbol,qty)  #  下单
+        new_margin_order(symbol,qty,indicator)  #  下单
     else:
         indicator = "NORMAL"   #正常网格, bypass
     
@@ -174,7 +174,7 @@ def kdj_signal_trading(symbol):
 """
 下单函数，做空，做多
 """
-def new_margin_order(symbol,qty):
+def new_margin_order(symbol,qty,indicator):
     # 当前报价口的买卖价格
     ticker = client.get_orderbook_ticker(symbol=symbol)
     logger.info("Current bid price: {}".format(ticker.get('bidPrice')))
@@ -205,7 +205,6 @@ def new_margin_order(symbol,qty):
         return
 
     # LONG or SHORT
-    global indicator
     if indicator == "LONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
