@@ -142,6 +142,7 @@ def kdj_signal_trading(symbol):
     cur_md = mid[-1]
     cur_dn = down[-1]
 
+    logger.info("===================START=============================")
     logger.info("Bollinger: up: {:.2f}, mid: {:.2f}, down: {:.2f}".format(up[-1],mid[-1],down[-1]))
 
     df['K'] = pd.DataFrame(rsv).ewm(com=2).mean()
@@ -152,6 +153,10 @@ def kdj_signal_trading(symbol):
     np_j = np.array(df['J'])
 
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
+    logger.info("K - D: {}".format(int(np_k[-1]) - int(np_d[-1])))
+    logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
+    logger.info("===================END=============================")
+    global indicator
     # 交易策略，吃多单
     if (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
         int(np_low_data[-1]) <= int(cur_dn) and len(long_order) == 0:
@@ -199,7 +204,8 @@ def new_margin_order(symbol,qty):
             repay_asset(pair_symbol, coin_symbol, sell_coin_qty, SIDE_SELL)
         return
 
-   # LONG or SHORT
+    # LONG or SHORT
+    global indicator
     if indicator == "LONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
