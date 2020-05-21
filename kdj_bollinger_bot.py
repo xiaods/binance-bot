@@ -152,11 +152,14 @@ def kdj_signal_trading(symbol):
     np_d = np.array(df['D'])
     np_j = np.array(df['J'])
 
+    global indicator, long_order, short_order
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
     logger.info("K - D: {}".format(int(np_k[-1]) - int(np_d[-1])))
     logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
+    logger.info("LONG indicator: {}, long_order:{}".format(int(np_low_data[-1]) <= int(cur_dn), len(long_order)))
+    logger.info("SHORT indicator: {}, short_order:{}".format(int(np_high_data[-1]) >= int(cur_up),len(short_order)))
     logger.info("===================END=============================")
-    global indicator
+
     # 交易策略，吃多单
     if (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
         int(np_low_data[-1]) <= int(cur_dn) and len(long_order) == 0:
@@ -351,6 +354,7 @@ def process_message(msg):
         # "i": 4293153,                  // orderId
         # "S": "BUY",                    // 订单方向
         if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol and msg.get('X') == ORDER_STATUS_FILLED:
+            global short_order, long_order
             if msg.get('S') == SIDE_BUY and msg.get('i') == short_order.get(SIDE_BUY):
                 del short_order[SIDE_BUY]
             elif msg.get('S') == SIDE_BUY and msg.get('i') == long_order.get(SIDE_BUY):
