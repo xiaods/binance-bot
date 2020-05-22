@@ -154,19 +154,19 @@ def kdj_signal_trading(symbol):
 
     global indicator, long_order, short_order
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
-    logger.info("K - D: {}".format(int(np_k[-1]) - int(np_d[-1])))
-    logger.info("high_data: {:.2f},low_data: {:.2f}, close_data: {:.2f} => DN:{:.2f}, UP:{:.2f}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
-    logger.info("LONG indicator: {}, long_order:{}".format(int(np_low_data[-1]) <= int(cur_dn), len(long_order)))
-    logger.info("SHORT indicator: {}, short_order:{}".format(int(np_high_data[-1]) >= int(cur_up),len(short_order)))
+    logger.info("K - D: {}".format(float(np_k[-1]) - float(np_d[-1])))
+    logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
+    logger.info("LONG indicator: {}, long_order:{}".format(float(np_low_data[-1]) <= float(cur_dn), len(long_order)))
+    logger.info("SHORT indicator: {}, short_order:{}".format(float(np_high_data[-1]) >= float(cur_up),len(short_order)))
     logger.info("===================END=============================")
 
     # 交易策略，吃多单
-    if (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
-        int(np_low_data[-1]) <= int(cur_dn) and len(long_order) == 0:
+    if (float(np_k[-1]) - float(np_d[-1])) in range(-2, 2) and \
+        float(np_low_data[-1]) <= float(cur_dn) and len(long_order) == 0:
         indicator = "LONG"  #做多
         new_margin_order(symbol,qty,indicator)  #  下单
-    elif (int(np_k[-1]) - int(np_d[-1])) in range(-2, 2) and \
-        int(np_high_data[-1]) >= int(cur_up) and len(short_order) == 0:
+    elif (float(np_k[-1]) - float(np_d[-1])) in range(-2, 2) and \
+        float(np_high_data[-1]) >= float(cur_up) and len(short_order) == 0:
         indicator = "SHORT" #做空
         new_margin_order(symbol,qty,indicator)  #  下单
     else:
