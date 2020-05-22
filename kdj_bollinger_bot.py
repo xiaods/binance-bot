@@ -155,7 +155,7 @@ def kdj_signal_trading(symbol):
     global indicator, long_order, short_order
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
     logger.info("K - D: {}".format(int(np_k[-1]) - int(np_d[-1])))
-    logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
+    logger.info("high_data: {:.2f},low_data: {:.2f}, close_data: {:.2f} => DN:{:.2f}, UP:{:.2f}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
     logger.info("LONG indicator: {}, long_order:{}".format(int(np_low_data[-1]) <= int(cur_dn), len(long_order)))
     logger.info("SHORT indicator: {}, short_order:{}".format(int(np_high_data[-1]) >= int(cur_up),len(short_order)))
     logger.info("===================END=============================")
