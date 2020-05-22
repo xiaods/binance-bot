@@ -171,7 +171,6 @@ def kdj_signal_trading(symbol):
         new_margin_order(symbol,qty,indicator)  #  下单
     else:
         indicator = "NORMAL"   #正常网格, bypass
-    
 
 """
 检查K,D信号是否越界
