@@ -161,11 +161,11 @@ def kdj_signal_trading(symbol):
     logger.info("===================END=============================")
 
     # 交易策略，吃多单
-    if (float(np_k[-1]) - float(np_d[-1])) in range(-2, 2) and \
+    if check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(long_order) == 0:
         indicator = "LONG"  #做多
         new_margin_order(symbol,qty,indicator)  #  下单
-    elif (float(np_k[-1]) - float(np_d[-1])) in range(-2, 2) and \
+    elif check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_high_data[-1]) >= float(cur_up) and len(short_order) == 0:
         indicator = "SHORT" #做空
         new_margin_order(symbol,qty,indicator)  #  下单
@@ -173,6 +173,13 @@ def kdj_signal_trading(symbol):
         indicator = "NORMAL"   #正常网格, bypass
     
 
+"""
+检查K,D信号是否越界
+"""
+def check_range(value):
+    if -2.0 <= value <= 2.0:
+        return True
+    return False
 
 """
 下单函数，做空，做多
