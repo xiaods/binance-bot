@@ -67,9 +67,11 @@ qty_accuracy = MarginAccount['qty_accuracy']
 bm = None
 conn_key = None
 indicator = None
-#memory order dict
-long_order = {}
-short_order = {}
+#memory order list
+long_order = []
+short_order = []
+order_dt_started = datetime.utcnow()
+
 
 def run():
     initialize_arb()
@@ -152,7 +154,7 @@ def kdj_signal_trading(symbol):
     np_d = np.array(df['D'])
     np_j = np.array(df['J'])
 
-    global indicator, long_order, short_order
+    global indicator, long_order, short_order, order_dt_started
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
     logger.info("K - D: {}".format(float(np_k[-1]) - float(np_d[-1])))
     logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
@@ -160,17 +162,22 @@ def kdj_signal_trading(symbol):
     logger.info("SHORT indicator: {}, short_order:{}".format(float(np_high_data[-1]) >= float(cur_up),len(short_order)))
     logger.info("===================END=============================")
 
+    order_dt_ended = datetime.utcnow()
     # 交易策略，吃多单
     if check_range(float(np_k[-1]) - float(np_d[-1])) and \
-        float(np_low_data[-1]) <= float(cur_dn) and len(long_order) == 0:
-        indicator = "LONG"  #做多
+        float(np_low_data[-1]) <= float(cur_dn) and len(long_order) <= max_margins and \
+         (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
+        indicator = "LONG"  # 做多
         new_margin_order(symbol,qty,indicator)  #  下单
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一点
     elif check_range(float(np_k[-1]) - float(np_d[-1])) and \
-        float(np_high_data[-1]) >= float(cur_up) and len(short_order) == 0:
-        indicator = "SHORT" #做空
+        float(np_high_data[-1]) >= float(cur_up) and len(short_order) <= max_margins and \
+          (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
+        indicator = "SHORT" # 做空
         new_margin_order(symbol,qty,indicator)  #  下单
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一点
     else:
-        indicator = "NORMAL"   #正常网格, bypass
+        indicator = "NORMAL"   # 正常网格, bypass
 
 """
 检查K,D信号是否越界
@@ -188,6 +195,11 @@ def new_margin_order(symbol,qty,indicator):
     ticker = client.get_orderbook_ticker(symbol=symbol)
     logger.info("Current bid price: {}".format(ticker.get('bidPrice')))
     logger.info("Current ask price: {}".format(ticker.get('askPrice')))
+
+    # 挂单总数量给予限制
+    if is_max_margins(max_margins) == True:
+        logger.warning("Come across max margins limits....return, don't do order anymore.")
+        return
 
     #计算当前账号的币的余额够不够，账户币余额必须大于30%才能交易
     account = client.get_margin_account()
@@ -237,8 +249,8 @@ def new_margin_order(symbol,qty,indicator):
 
         logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
         logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
-        long_order[SIDE_BUY] = buy_order.get("orderId")
-        long_order[SIDE_SELL] = sell_order.get("orderId")
+        long_order.append( buy_order.get("orderId") )
+        long_order.append( sell_order.get("orderId") )
 
     elif indicator == "SHORT":
         sell_price = float(ticker.get('askPrice'))*float(1)
@@ -264,8 +276,8 @@ def new_margin_order(symbol,qty,indicator):
 
         logger.info("做空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
         logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
-        short_order[SIDE_BUY] = buy_order.get("orderId")
-        short_order[SIDE_SELL] = sell_order.get("orderId")
+        short_order.append( buy_order.get("orderId") )
+        short_order.append( sell_order.get("orderId") )
 
     else:
         logger.info("NO CHANCE: indicator:{}".format(indicator))
@@ -347,28 +359,17 @@ def process_message(msg):
         conn_key = bm.start_margin_socket(process_message)
         logger.info("renewer websocket Conn key: {}".format(conn_key))
     else:
-        # process message normally
-        # 单边出现，等待交易员操作，保持当前挂单
-        if is_max_margins(max_margins) == True:
-            logger.warning("Come across max margins limits....return, don't do order anymore.")
-            return
-
         # 处理event executionReport
         if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol:
             logger.info(msg)
         # 当有交易成功的挂单，更新交易对字典
         # "i": 4293153,                  // orderId
-        # "S": "BUY",                    // 订单方向
         if msg.get('e') == 'executionReport' and msg.get('s')  == pair_symbol and msg.get('X') == ORDER_STATUS_FILLED:
             global short_order, long_order
-            if msg.get('S') == SIDE_BUY and msg.get('i') == short_order.get(SIDE_BUY):
-                del short_order[SIDE_BUY]
-            elif msg.get('S') == SIDE_BUY and msg.get('i') == long_order.get(SIDE_BUY):
-                del long_order[SIDE_BUY]
-            elif msg.get('S') == SIDE_SELL and msg.get('i') == short_order.get(SIDE_SELL):
-                del short_order[SIDE_SELL]
-            elif msg.get('S') == SIDE_SELL and msg.get('i') == long_order.get(SIDE_SELL):
-                del long_order[SIDE_SELL]
+            if msg.get('i') in short_order:
+                short_order.remove( msg.get('i') )
+            elif msg.get('i') in long_order:
+                long_order.remove( msg.get('i') )
 
 '''
 Purpose: Keepalive a user data stream to prevent a time out.
