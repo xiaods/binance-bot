@@ -160,9 +160,12 @@ def kdj_signal_trading(symbol):
     logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
     logger.info("LONG indicator: {}, long_order:{}".format(float(np_low_data[-1]) <= float(cur_dn), len(long_order)))
     logger.info("SHORT indicator: {}, short_order:{}".format(float(np_high_data[-1]) >= float(cur_up),len(short_order)))
+    
+    order_dt_ended = datetime.utcnow()
+    logger.info("挂单时间间隔：{} > 60*5".format((order_dt_ended - order_dt_started).total_seconds()))
     logger.info("===================END=============================")
 
-    order_dt_ended = datetime.utcnow()
+    
     # 交易策略，吃多单
     if check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(long_order) <= max_margins/2 and \
