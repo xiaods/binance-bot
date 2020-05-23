@@ -172,13 +172,13 @@ def kdj_signal_trading(symbol):
          (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
         indicator = "LONG"  # 做多
         new_margin_order(symbol,qty,indicator)  #  下单
-        order_dt_started = datetime.utcnow()  # 5分钟只能下一点
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_high_data[-1]) >= float(cur_up) and len(short_order) <= max_margins/2 and \
           (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
         indicator = "SHORT" # 做空
         new_margin_order(symbol,qty,indicator)  #  下单
-        order_dt_started = datetime.utcnow()  # 5分钟只能下一点
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     else:
         indicator = "NORMAL"   # 正常网格, bypass
 
@@ -371,8 +371,10 @@ def process_message(msg):
             global short_order, long_order
             if msg.get('i') in short_order:
                 short_order.remove( msg.get('i') )
+                logger.info("做空单交易完成，交易ID: {}".format(msg.get('i')))
             elif msg.get('i') in long_order:
                 long_order.remove( msg.get('i') )
+                logger.info("做多单交易完成，交易ID: {}".format(msg.get('i')))
 
 '''
 Purpose: Keepalive a user data stream to prevent a time out.
