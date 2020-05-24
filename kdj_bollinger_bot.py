@@ -220,13 +220,13 @@ def new_margin_order(symbol,qty,indicator):
         buy_coin_qty = float(qty_accuracy % float(loan * 0.5))
         if free_cash > (base_balance * free_cash_limit_percentile) and (buy_coin_qty * float(buy_price)) < free_cash:
             repay_asset(pair_symbol, coin_symbol, buy_coin_qty, SIDE_BUY)
-            return
+        return
     if free_cash < (base_balance * free_cash_limit_percentile):
         logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         sell_coin_qty = float(qty_accuracy % float(free_coin - loan))
         if free_coin > loan and (sell_coin_qty * float(sell_price)) > 10:  # 币安要求最小交易金额必须大于10
             repay_asset(pair_symbol, coin_symbol, sell_coin_qty, SIDE_SELL)
-            return
+        return
 
     # LONG or SHORT
     if indicator == "LONG":
