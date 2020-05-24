@@ -18,7 +18,7 @@ free -m
 
 ### 安装RSI指标计算库依赖
 ```bash
-apt-get upgrade
+apt-get update
 apt-get install build-essential
 
 # download from 
