@@ -33,7 +33,7 @@ cd ta-lib
 make && make install
 
 apt-get install python3-pip
-### rsi指标
+### ta-lib, 需要最少1G的内存，小机器请使用swap扩展
 pip3 install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 pip3 install ta-lib
 
