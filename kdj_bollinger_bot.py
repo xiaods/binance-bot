@@ -107,6 +107,11 @@ def initialize_arb():
 """
  KDJ + bollinger_signal 自动交易策略
  bollinger_signal 21,2
+
+ SHORT: 做空单， 1%
+ LONG：做多单， 1%
+ MLONG： 中间位置下跌空单， 0.5%
+ MSHORT: 中间位置上涨， 0.5%
 """
 def kdj_signal_trading(symbol):
     fastk_period = 9
@@ -169,14 +174,32 @@ def kdj_signal_trading(symbol):
     # 交易策略，吃多单
     if check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(long_order) < max_margins/2 and \
-         (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
+         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
+
         indicator = "LONG"  # 做多
         new_margin_order(symbol,qty,indicator)  #  下单
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif check_range(float(np_k[-1]) - float(np_d[-1])) and \
         float(np_high_data[-1]) >= float(cur_up) and len(short_order) < max_margins/2 and \
-          (order_dt_ended - order_dt_started).total_seconds() > 60*5  :
+          (order_dt_ended - order_dt_started).total_seconds() > 60*5:
+
         indicator = "SHORT" # 做空
+        new_margin_order(symbol,qty,indicator)  #  下单
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一单
+    elif float(np_k[-1]) < float(np_d[-1]) and float(np_j[-1]) < float(np_d[-1]) and \
+        float(np_k[-1]) < float(30) and float(np_j[-1]) < float(20) and \
+        float(np_low_data[-1]) <= float(cur_dn) and len(short_order) < max_margins/2 and \
+        (order_dt_ended - order_dt_started).total_seconds() > 60*10:
+
+        indicator = "MSHORT" # 做小空
+        new_margin_order(symbol,qty,indicator)  #  下单
+        order_dt_started = datetime.utcnow()  # 5分钟只能下一单
+    elif float(np_k[-1]) > float(np_d[-1]) and float(np_j[-1]) > float(np_d[-1]) and \
+         float(np_k[-1]) > float(70) and float(np_j[-1]) > float(80) and \
+        float(np_high_data[-1]) >= float(cur_up) and len(long_order) < max_margins/2 and \
+         (order_dt_ended - order_dt_started).total_seconds() > 60*10:
+
+        indicator = "MLONG" # 做小多
         new_margin_order(symbol,qty,indicator)  #  下单
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     else:
@@ -258,6 +281,59 @@ def new_margin_order(symbol,qty,indicator):
         logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
         long_order.append( buy_order.get("orderId") )
         long_order.append( sell_order.get("orderId") )
+    
+    elif indicator == "MLONG":
+        buy_price = float(ticker.get('bidPrice'))*float(1)
+        buy_price = price_accuracy % buy_price
+
+        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+        sell_price = price_accuracy % sell_price
+
+        buy_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_BUY,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+        
+        sell_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_SELL,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=sell_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+        logger.info("做小多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做小多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
+        long_order.append( buy_order.get("orderId") )
+        long_order.append( sell_order.get("orderId") )
+
+    elif indicator == "MSHORT":
+        sell_price = float(ticker.get('askPrice'))*float(1)
+        sell_price = price_accuracy % sell_price
+
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+        buy_price = price_accuracy % buy_price
+
+        buy_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_BUY,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=buy_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+
+        sell_order = client.create_margin_order(symbol=symbol,
+                                       side=SIDE_SELL,
+                                       type=ORDER_TYPE_LIMIT,
+                                       quantity=qty,
+                                       price=sell_price,
+                                       timeInForce=TIME_IN_FORCE_GTC)
+
+        logger.info("做小空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做小空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
+        short_order.append( buy_order.get("orderId") )
+        short_order.append( sell_order.get("orderId") )
 
     elif indicator == "SHORT":
         sell_price = float(ticker.get('askPrice'))*float(1)
@@ -285,7 +361,6 @@ def new_margin_order(symbol,qty,indicator):
         logger.info("做空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
         short_order.append( buy_order.get("orderId") )
         short_order.append( sell_order.get("orderId") )
-
     else:
         logger.info("NO CHANCE: indicator:{}".format(indicator))
 
