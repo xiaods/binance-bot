@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import sys
 import signal
+import threading
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -97,11 +98,22 @@ def initialize_arb():
     logger.info("websocket Conn key: {}".format(conn_key) )
     bm.start()
 
+    # 根据KDJ线 + Bolling线 定期执行
+    t = threading.Thread(target=kdj_signal_loop, args=(pair_symbol,))
+    t.setDaemon(True)
+    t.start()
+
     # 30分钟ping user websocket，key可以存活1个小时
-    # 根据KDJ线 + Bolling线
     while True:
         get_margin_stream_keepalive(conn_key)
-        kdj_signal_trading(pair_symbol)
+        time.sleep(60 * 30)
+
+"""
+KDJ strategy loop
+"""
+def kdj_signal_loop(symbol):
+    while True:
+        kdj_signal_trading(symbol)
         time.sleep(5)
 
 """
