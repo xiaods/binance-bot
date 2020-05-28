@@ -104,9 +104,9 @@ def initialize_arb():
     t.start()
 
     # 30分钟ping user websocket，key可以存活1个小时
-    while True:
-        get_margin_stream_keepalive(conn_key)
-        time.sleep(60 * 30)
+    l = threading.Thread(target=get_margin_stream_keepalive, args=(conn_key,))
+    l.setDaemon(True)
+    l.start()
 
 """
 KDJ strategy loop
@@ -475,8 +475,9 @@ User data streams will close after 60 minutes.
 It's recommended to send a ping about every 30 minutes.
 '''
 def get_margin_stream_keepalive(listen_key):
-    result = client.margin_stream_keepalive(listen_key)
-    return result
+    while True:
+        result = client.margin_stream_keepalive(listen_key)
+        time.sleep(60 * 30)
 
 def term_sig_handler(signum, frame):
     print('catched singal: %d' % signum)
