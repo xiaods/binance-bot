@@ -184,7 +184,7 @@ def kdj_signal_trading(symbol):
 
     
     # 交易策略，吃多单
-    if check_range(float(np_k[-1]) - float(np_d[-1])) and \
+    if check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
         float(np_k[-1]) < float(30) and float(np_j[-1]) < float(30) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(long_order) < max_margins/2 and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
@@ -192,7 +192,7 @@ def kdj_signal_trading(symbol):
         indicator = "LONG"  # 做多
         new_margin_order(symbol,qty,indicator)  #  下单
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
-    elif check_range(float(np_k[-1]) - float(np_d[-1])) and \
+    elif check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(70) and \
         float(np_high_data[-1]) >= float(cur_up) and len(short_order) < max_margins/2 and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
@@ -222,8 +222,8 @@ def kdj_signal_trading(symbol):
 """
 检查K,D信号是否越界
 """
-def check_range(value):
-    if -2.0 <= value <= 2.0:
+def check_range(value,left_tick,right_tick):
+    if left_tick <= value <= right_tick:
         return True
     return False
 
