@@ -72,7 +72,7 @@ indicator = None
 long_order = []
 short_order = []
 order_dt_started = datetime.utcnow()
-
+close_data = []  #当前 close价格
 
 def run():
     initialize_arb()
@@ -190,7 +190,7 @@ def kdj_signal_trading(symbol):
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "LONG"  # 做多
-        new_margin_order(symbol,qty,indicator)  #  下单
+        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(70) and \
@@ -198,15 +198,15 @@ def kdj_signal_trading(symbol):
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "SHORT" # 做空
-        new_margin_order(symbol,qty,indicator)  #  下单
+        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif float(np_k[-1]) < float(np_d[-1]) and float(np_j[-1]) < float(np_d[-1]) and \
         float(np_k[-1]) < float(30) and float(np_j[-1]) < float(20) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(short_order) < max_margins/2 and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*10:
-
+        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
         indicator = "MSHORT" # 做小空
-        new_margin_order(symbol,qty,indicator)  #  下单
+
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif float(np_k[-1]) > float(np_d[-1]) and float(np_j[-1]) > float(np_d[-1]) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(80) and \
@@ -214,10 +214,53 @@ def kdj_signal_trading(symbol):
          (order_dt_ended - order_dt_started).total_seconds() > 60*10:
 
         indicator = "MLONG" # 做小多
-        new_margin_order(symbol,qty,indicator)  #  下单
+        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     else:
-        indicator = "NORMAL"   # 正常网格, bypass
+        # 这里加上延时判断，当获得信号后，判断60/5 = 12 次 信号中，close报价list是按照涨的趋势还是跌的趋势，这样可以果断修正交易策略
+        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+
+        # 开始计算close次数
+        if len(close_data) >= 12 and indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
+            #判断list的数字趋势是涨还是跌
+            indicator = check_indicator(close_data, indicator)
+            new_margin_order(symbol,qty,indicator)  #  下单
+            close_data.clear()
+
+"""
+检查当前价格趋势
+* k > 0.1763 表示上升
+* k < -0.1763 表示下降
+* 其他，则表示平稳或震荡
+"""
+def check_indicator(close_data, indicator):
+    index=[*range(1,len(close_data)+1)]
+    k=trendline(index, close_data)
+    if k > 0.1763:  #上升 应该做多
+        if indicator == "MSHORT":
+            indicator  = "MLONG"
+        elif indicator == "SHORT":
+            indicator = "LONG"
+    elif k < -0.1763: #下降 应该做空
+        if indicator == "MLONG":
+            indicator = "MSHORT"
+        elif indicator == "LONG":
+            indicator = "SHORT"
+    else:
+        indicator = "NORMAL"  #无法判断的，放弃下单
+    
+    return indicator
+
+"""
+最小二乘法将序列拟合成直线。后根据直线的斜率k去取得序列的走势
+* k > 0.1763 表示上升
+* k < -0.1763 表示下降
+* 其他，则表示平稳或震荡
+"""
+def trendline(index,data, order=1):
+    coeffs = np.polyfit(index, list(data), order)
+    slope = coeffs[-2]
+    return float(slope)
 
 """
 检查K,D信号是否越界
