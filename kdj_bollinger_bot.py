@@ -179,7 +179,7 @@ def kdj_signal_trading(symbol):
     logger.info("SHORT indicator: {}, short_order:{}".format(float(np_high_data[-1]) >= float(cur_up),len(short_order)))
     
     order_dt_ended = datetime.utcnow()
-    logger.info("挂单时间间隔：{} > 60*5".format((order_dt_ended - order_dt_started).total_seconds()))
+    logger.info("挂单时间间隔：{} > {}".format((order_dt_ended - order_dt_started).total_seconds(), 60*5))
     logger.info("===================END=============================")
 
     
