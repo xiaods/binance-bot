@@ -244,14 +244,15 @@ def kdj_signal_trading(symbol):
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     else:
         # 这里加上延时判断，当获得信号后，判断60/5 = 12 次 信号中，close报价list是按照涨的趋势还是跌的趋势，这样可以果断修正交易策略
-        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
-
-        # 开始计算close次数
-        if len(close_price_list) >= 12 and indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
-            #判断list的数字趋势是涨还是跌
-            indicator = check_indicator(close_price_list, indicator)
-            new_margin_order(symbol,qty,indicator)  #  下单
-            close_price_list.clear()
+        if indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
+            close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
+            logger.info("最新价格信号列表{}".format(close_price_list))
+            # 开始计算close次数
+            if len(close_price_list) >= 12:
+                #判断list的数字趋势是涨还是跌
+                indicator = check_indicator(close_price_list, indicator)
+                new_margin_order(symbol,qty,indicator)  #  下单
+                close_price_list.clear()
 
 """
 检查当前价格趋势
