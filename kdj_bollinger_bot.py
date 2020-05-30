@@ -4,7 +4,7 @@
     KDJ + Bollinger Close Price边界跨过布林线后，通过KDJ的金叉给一个捕鱼信号。每次只出一单。
 """
 import time
-from datetime import datetime
+from datetime import datetime,timedelta
 import sys
 import signal
 import threading
@@ -107,6 +107,32 @@ def initialize_arb():
     l = threading.Thread(target=get_margin_stream_keepalive, args=(conn_key,))
     l.setDaemon(True)
     l.start()
+
+    # 30分钟检查一下过期的订单，主动取消。保证可以挂新订单。
+    t = threading.Thread(target=outdated_order_clear, args=(pair_symbol,))
+    t.setDaemon(True)
+    t.start()
+
+
+"""
+超过区间日志的订单自动取消
+"""
+def outdated_order_clear(symbol):
+    while True:
+        orders = client.get_open_margin_orders(symbol=symbol)
+        today = datetime.now()
+        offset = timedelta(days=-3)
+        re_date = (today + offset)
+        re_date_unix = time.mktime(re_date.timetuple())
+        for o in orders: 
+            d = float(o["time"])/1000
+            #挂单时间小于等于3天前
+            if d <= re_date_unix:
+                result = client.cancel_margin_order(symbol=symbol,
+                                            orderId=o["orderId"])
+                logger.info("过期3天的订单自动取消，取消订单交易ID: {}".format(result))
+        # 每个小时检查一次
+        time.sleep(60*60*1)  
 
 """
 KDJ strategy loop
