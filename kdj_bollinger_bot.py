@@ -230,9 +230,9 @@ def kdj_signal_trading(symbol):
         float(np_k[-1]) < float(30) and float(np_j[-1]) < float(20) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(short_order) < max_margins/2 and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*10:
-        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
-        indicator = "MSHORT" # 做小空
 
+        indicator = "MSHORT" # 做小空
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif float(np_k[-1]) > float(np_d[-1]) and float(np_j[-1]) > float(np_d[-1]) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(80) and \
