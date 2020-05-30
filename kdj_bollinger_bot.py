@@ -72,7 +72,7 @@ indicator = None
 long_order = []
 short_order = []
 order_dt_started = datetime.utcnow()
-close_data = []  #当前 close价格
+close_price_list = []  #当前 close价格
 
 def run():
     initialize_arb()
@@ -132,7 +132,7 @@ def outdated_order_clear(symbol):
                                             orderId=o["orderId"])
                 logger.info("过期3天的订单自动取消，取消订单交易ID: {}".format(result))
         # 每个小时检查一次
-        time.sleep(60*60*1)  
+        time.sleep(60*60*1)
 
 """
 KDJ strategy loop
@@ -197,7 +197,7 @@ def kdj_signal_trading(symbol):
     np_d = np.array(df['D'])
     np_j = np.array(df['J'])
 
-    global indicator, long_order, short_order, order_dt_started
+    global indicator, long_order, short_order, order_dt_started, close_price_list
     logger.info("KDJ: k: {:.2f}, d: {:.2f}, j: {:.2f}".format(np_k[-1],np_d[-1],np_j[-1]))
     logger.info("K - D: {}".format(float(np_k[-1]) - float(np_d[-1])))
     logger.info("high_data: {},low_data: {}, close_data: {} => DN:{}, UP:{}".format(np_high_data[-1],np_low_data[-1],np_close_data[-1], cur_dn, cur_up))
@@ -216,7 +216,7 @@ def kdj_signal_trading(symbol):
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "LONG"  # 做多
-        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(70) and \
@@ -224,13 +224,13 @@ def kdj_signal_trading(symbol):
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "SHORT" # 做空
-        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif float(np_k[-1]) < float(np_d[-1]) and float(np_j[-1]) < float(np_d[-1]) and \
         float(np_k[-1]) < float(30) and float(np_j[-1]) < float(20) and \
         float(np_low_data[-1]) <= float(cur_dn) and len(short_order) < max_margins/2 and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*10:
-        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         indicator = "MSHORT" # 做小空
 
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
@@ -240,18 +240,18 @@ def kdj_signal_trading(symbol):
          (order_dt_ended - order_dt_started).total_seconds() > 60*10:
 
         indicator = "MLONG" # 做小多
-        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     else:
         # 这里加上延时判断，当获得信号后，判断60/5 = 12 次 信号中，close报价list是按照涨的趋势还是跌的趋势，这样可以果断修正交易策略
-        close_data.append(float(np_close_data[-1]))  #加入当前最新价格
+        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
 
         # 开始计算close次数
-        if len(close_data) >= 12 and indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
+        if len(close_price_list) >= 12 and indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
             #判断list的数字趋势是涨还是跌
-            indicator = check_indicator(close_data, indicator)
+            indicator = check_indicator(close_price_list, indicator)
             new_margin_order(symbol,qty,indicator)  #  下单
-            close_data.clear()
+            close_price_list.clear()
 
 """
 检查当前价格趋势
@@ -259,9 +259,9 @@ def kdj_signal_trading(symbol):
 * k < -0.1763 表示下降
 * 其他，则表示平稳或震荡
 """
-def check_indicator(close_data, indicator):
-    index=[*range(1,len(close_data)+1)]
-    k=trendline(index, close_data)
+def check_indicator(close_price_list, indicator):
+    index=[*range(1,len(close_price_list)+1)]
+    k=trendline(index, close_price_list)
     if k > 0.1763:  #上升 应该做多
         if indicator == "MSHORT":
             indicator  = "MLONG"
