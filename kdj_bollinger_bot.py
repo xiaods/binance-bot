@@ -251,6 +251,7 @@ def kdj_signal_trading(symbol):
         if len(close_price_list) >= 36:
             #判断list的数字趋势是涨还是跌
             indicator = check_indicator(close_price_list, indicator)
+            logger.info("此次下单信号为: {}".format(indicator))
             new_margin_order(symbol,qty,indicator)  #  下单
             #重置条件，close_price_list.clear and indicator=NONE
             close_price_list.clear()
