@@ -248,7 +248,7 @@ def kdj_signal_trading(symbol):
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         logger.info("最新价格信号列表{}".format(close_price_list))
         # 开始计算close次数
-        if len(close_price_list) >= 12:
+        if len(close_price_list) >= 36:
             #判断list的数字趋势是涨还是跌
             indicator = check_indicator(close_price_list, indicator)
             new_margin_order(symbol,qty,indicator)  #  下单
@@ -276,8 +276,6 @@ def check_indicator(close_price_list, indicator):
             indicator = "MSHORT"
         elif indicator == "LONG":
             indicator = "SHORT"
-    else:
-        indicator = "NORMAL"  #无法判断的，放弃下单
     
     return indicator
 
