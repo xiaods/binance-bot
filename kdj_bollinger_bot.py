@@ -252,7 +252,9 @@ def kdj_signal_trading(symbol):
             #判断list的数字趋势是涨还是跌
             indicator = check_indicator(close_price_list, indicator)
             new_margin_order(symbol,qty,indicator)  #  下单
+            #重置条件，close_price_list.clear and indicator=NONE
             close_price_list.clear()
+            indicator = None
 
 """
 检查当前价格趋势
