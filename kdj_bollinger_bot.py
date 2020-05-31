@@ -267,7 +267,7 @@ def kdj_signal_trading(symbol):
 """
 def check_indicator(close_price_list, indicator):
     index=[*range(1,len(close_price_list)+1)]
-    k=trendline(index, close_price_list)
+    k=trendline(index, close_price_list, 3) #采用三次多项式拟合曲线
     logger.info("涨跌k趋势指标: {},  k > {}} 表示上升, k < {}} 表示下降".format(k, trend_limit_tan[0], trend_limit_tan[1]))
     if k > trend_limit_tan[0]:  #上升 应该做多
         if indicator == "MSHORT":
