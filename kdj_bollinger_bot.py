@@ -65,6 +65,8 @@ price_accuracy = MarginAccount['price_accuracy']
 qty_accuracy = MarginAccount['qty_accuracy']
 # 趋势判断值
 trend_limit_tan = MarginAccount['trend_limit_tan']
+#是否借币开关
+loan_enabled = MarginAccount['loan_enabled']
 
 # BinanceSocketManager 全局变量初始化
 bm = None
@@ -91,7 +93,8 @@ def initialize_arb():
 
     # step1 第一入口
     # 1.2 借出币
-    loan_asset(coin_symbol,loan)
+    if loan_enabled:
+        loan_asset(coin_symbol, loan)
 
     # step2 监听杠杆交易
     global bm, conn_key
