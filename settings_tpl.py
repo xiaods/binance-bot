@@ -27,6 +27,7 @@ MarginAccount = {
     'free_cash_limit_percentile': 0.1,  #<-----最小可用金额百分比， 20%
     'price_accuracy': '%.4f',  #<----- 价格精度，交易需要指定。默认 .4f
     'qty_accuracy': '%.2f', #<------ 数量进度， EOS是 2个， BTC是6个
+    'trend_limit_tan': [0.1763, -0.1763],  #<--------- 趋势判断，kline 用tan函数，默认是tan10, 但是EOS比值太小，换了更小的值
  }
 
 BinanceKey1 = {'api_key': '< your api key>',
