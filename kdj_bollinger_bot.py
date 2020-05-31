@@ -265,12 +265,13 @@ def kdj_signal_trading(symbol):
 def check_indicator(close_price_list, indicator):
     index=[*range(1,len(close_price_list)+1)]
     k=trendline(index, close_price_list)
-    if k > 0.1763:  #上升 应该做多
+    logger.info("涨跌k趋势指标: {},  k > 0.1763 表示上升, k < -0.1763 表示下降", k)
+    if k > 0.0002:  #上升 应该做多
         if indicator == "MSHORT":
             indicator  = "MLONG"
         elif indicator == "SHORT":
             indicator = "LONG"
-    elif k < -0.1763: #下降 应该做空
+    elif k < -0.0002: #下降 应该做空
         if indicator == "MLONG":
             indicator = "MSHORT"
         elif indicator == "LONG":
