@@ -101,11 +101,11 @@ def initialize_arb():
     bm = BinanceSocketManager(client)
     conn_key = bm.start_margin_socket(process_message)
     logger.info("websocket Conn key: {}".format(conn_key) )
+    bm.setDaemon(True)
     bm.start()
 
     # 根据KDJ线 + Bolling线 定期执行
     t = threading.Thread(target=kdj_signal_loop, args=(pair_symbol,))
-    t.setDaemon(True)
     t.start()
 
     # 30分钟ping user websocket，key可以存活1个小时
