@@ -377,7 +377,7 @@ def new_margin_order(symbol,qty,indicator):
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.005)
+        sell_price = float(ticker.get('askPrice'))*float(1+0.00618)
         sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
@@ -400,7 +400,7 @@ def new_margin_order(symbol,qty,indicator):
         long_order.append( sell_order.get("orderId") )
 
     elif indicator == "MSHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.005)
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.00618)
         buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1)
