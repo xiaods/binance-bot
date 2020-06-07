@@ -2,8 +2,6 @@
 """
 币安自动交易bot
     KDJ + Bollinger Close Price边界跨过布林线后，通过KDJ的金叉给一个捕鱼信号。每次只出一单。
-    因为币价动荡，即使通过最低价获得的币，仍然会因为币价下跌导致收益受损。所以，做多单边，
-    每次的结果最终以USDT现货为结果，适合短线用户的直接变现需求。
 """
 import time
 from datetime import datetime,timedelta
@@ -251,7 +249,7 @@ def kdj_signal_trading(symbol):
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
 
     # 这里加上延时判断，当获得信号后，判断60/5 = 12 次 信号中，close报价list是按照涨的趋势还是跌的趋势，这样可以果断修正交易策略
-    if indicator in ["MLONG", "LONG"]:
+    if indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         logger.info("最新价格信号列表{}".format(close_price_list))
         # 开始计算close次数
