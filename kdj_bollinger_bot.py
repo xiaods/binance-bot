@@ -104,7 +104,7 @@ def initialize_arb():
     bm.setDaemon(True)
     bm.start()
 
-    # 根据KDJ线 + Bolling线 定期执行
+    # 根据KDJ线 + Bolling线 定期执行, 主进程
     t = threading.Thread(target=kdj_signal_loop, args=(pair_symbol,))
     t.start()
 
@@ -351,7 +351,7 @@ def new_margin_order(symbol,qty,indicator):
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.01)
+        sell_price = float(ticker.get('askPrice'))*float(1+0.008)
         sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
@@ -427,7 +427,7 @@ def new_margin_order(symbol,qty,indicator):
         short_order.append( sell_order.get("orderId") )
 
     elif indicator == "SHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.01)
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.008)
         buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1)
