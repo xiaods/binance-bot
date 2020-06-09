@@ -95,7 +95,7 @@ def initialize_arb():
     # step1 第一入口
     # 1.2 借出币
     if loan_enabled:
-        loan_asset(usdt_symbol, loan)
+        loan_asset(coin_symbol, loan)
 
     # step2 监听杠杆交易
     global bm, conn_key
