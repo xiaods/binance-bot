@@ -2,6 +2,7 @@
 """
 币安自动交易bot
     KDJ + Bollinger Close Price边界跨过布林线后，通过KDJ的金叉给一个捕鱼信号。每次只出一单。
+    只捕捉做多的信号，一次交易，最后是换成USDT，适合没有机器学习的场景
 """
 import time
 from datetime import datetime,timedelta
