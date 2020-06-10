@@ -162,12 +162,15 @@ def kdj_signal_trading(symbol):
     slowk_period = 3
     slowd_period = 3
 
-    candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_5MINUTE)
-    df = pd.DataFrame(candles)
-    df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
-    df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
-    df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
-
+    try:
+        candles = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_5MINUTE)
+        df = pd.DataFrame(candles)
+        df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
+        df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
+        df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
+    except ConnectionResetError as e:
+        logger.error("Connection aborted, {}".format(e))
+        return
 
     low_list = df['low'].rolling(9, min_periods=9).min()
     low_list.fillna(value = df['low'].expanding().min(), inplace = True)
