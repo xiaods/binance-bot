@@ -168,7 +168,7 @@ def kdj_signal_trading(symbol):
         df.columns=['timestart','open','high','low','close','?','timeend','?','?','?','?','?']
         df.timestart = [datetime.fromtimestamp(i/1000) for i in df.timestart.values]
         df.timeend = [datetime.fromtimestamp(i/1000) for i in df.timeend.values]
-    except ConnectionResetError as e:
+    except ConnectionError as e:
         logger.error("Connection aborted, {}".format(e))
         return
 
