@@ -15,8 +15,9 @@ MarginAccount = {
     'pair_symbol': 'EOSUSDT',
     'coin_symbol': 'EOS',
     'usdt_symbol': 'USDT',
-    'loan': 0,   # <-----借贷币的数量
+    'loan_balance': 0,   # <-----借贷币的数量
     'loan_enabled': False,  #<------是否借币开关，在币价动荡的时候，可以关闭借币通道
+    'coin_balance': 0, #<----- 开盘总持有币数量
     'depth': 1,   # <-----对手单深度数
     'bnb_symbol': 'BNB',
     'base_balance': 0,  # <---投入本金，一般为USDT

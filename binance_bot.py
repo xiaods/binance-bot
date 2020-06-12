@@ -44,8 +44,9 @@ logger.setLevel(logging.INFO)
 pair_symbol = MarginAccount['pair_symbol']
 coin_symbol = MarginAccount['coin_symbol']
 usdt_symbol = MarginAccount['usdt_symbol']
-loan = MarginAccount['loan']
+loan = MarginAccount['loan_balance']
 depth = MarginAccount['depth']
+coin_balance = MarginAccount['coin_balance']
 qty = loan / depth
 base_balance = MarginAccount['base_balance']
 # 最大交易对
