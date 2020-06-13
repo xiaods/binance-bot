@@ -339,6 +339,12 @@ def new_margin_order(symbol,qty,indicator):
         if asset.get('asset') == usdt_symbol:
             free_cash = float(asset.get('free'))
     # 规则：账户余额必须大于 base_balance * free_cash_limit_percentile 才能交易
+    if free_coin < qty:
+        logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
+        buy_coin_qty = float(qty_accuracy % float(loan * 0.5))
+        if free_cash > (base_balance * free_cash_limit_percentile) and (buy_coin_qty * float(buy_price)) < free_cash:
+            repay_asset(pair_symbol, coin_symbol, buy_coin_qty, "BUY")
+        return
     if free_cash < (base_balance * free_cash_limit_percentile):
         logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         sell_coin_qty = float(qty_accuracy % float(free_coin - loan))
