@@ -123,7 +123,7 @@ def initialize_arb():
 
 
 """
-超过区间日志的订单自动取消
+超过区间日期（这里默认是3天）的订单自动取消
 """
 def outdated_order_clear(symbol):
     while True:
