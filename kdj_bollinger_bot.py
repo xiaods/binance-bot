@@ -263,8 +263,7 @@ def kdj_signal_trading(symbol):
             #判断list的数字趋势是涨还是跌
             indicator = check_indicator(close_price_list, indicator)
             logger.info("此次下单信号为: {}".format(indicator))
-            if indicator in ["MLONG", "LONG"]:
-                new_margin_order(symbol,qty,indicator)  #  下单
+            new_margin_order(symbol,qty,indicator)  #  下单
             #重置条件，close_price_list.clear and indicator=NONE
             close_price_list.clear()
             indicator = None
@@ -329,7 +328,7 @@ def new_margin_order(symbol,qty,indicator):
         logger.warning("Come across max margins limits....return, don't do order anymore.")
         return
 
-    #计算当前账号的币的余额够不够，账户币余额必须大于30%才能交易
+    #计算当前账号的币的余额够不够，账户币余额必须大于free_cash_limit_percentile才能交易
     account = client.get_margin_account()
     userAssets = account.get('userAssets')
     free_coin = float(0)
@@ -361,7 +360,7 @@ def new_margin_order(symbol,qty,indicator):
                                        quantity=qty,
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        
+
         sell_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_SELL,
                                        type=ORDER_TYPE_LIMIT,
@@ -373,12 +372,12 @@ def new_margin_order(symbol,qty,indicator):
         logger.info("做多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
         long_order.append( buy_order.get("orderId") )
         long_order.append( sell_order.get("orderId") )
-    
+
     elif indicator == "MLONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.00618)
+        sell_price = float(ticker.get('askPrice'))*float(1+0.004)
         sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
@@ -401,10 +400,10 @@ def new_margin_order(symbol,qty,indicator):
         long_order.append( sell_order.get("orderId") )
 
     elif indicator == "MSHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.00618)
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.003)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1)
+        sell_price = float(ticker.get('askPrice'))*float(1+0.003)
         sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
@@ -428,7 +427,7 @@ def new_margin_order(symbol,qty,indicator):
         short_order.append( sell_order.get("orderId") )
 
     elif indicator == "SHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.008)
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.003)
         buy_price = price_accuracy % buy_price
 
         sell_price = float(ticker.get('askPrice'))*float(1)
@@ -440,7 +439,6 @@ def new_margin_order(symbol,qty,indicator):
                                        quantity=qty,
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-
 
         sell_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_SELL,
@@ -474,8 +472,8 @@ def repay_asset(pair_symbol, coin_symbol, qty, type):
                                        quantity=qty, 
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-
         logger.info("自动补仓代币 {}: {}, 补仓单价：{}".format(coin_symbol, qty, buy_price))
+
     elif type ==  SIDE_SELL:
         sell_price = float(ticker.get('askPrice'))
         sell_price = price_accuracy % sell_price
