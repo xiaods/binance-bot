@@ -242,7 +242,7 @@ def kdj_signal_trading(symbol):
          float(np_high_data[-1]) < float(cur_up)  and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
-        indicator = "GRID" # 做空
+        indicator = "GRID" # 做网格
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
 
