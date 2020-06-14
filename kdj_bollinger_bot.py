@@ -58,8 +58,6 @@ qty = coin_balance / depth
 base_balance = MarginAccount['base_balance']
 # 最大交易对
 max_margins = MarginAccount['max_margins']
-# 账户币余额必须大于30%才能交易
-free_coin_limit_percentile = MarginAccount['free_coin_limit_percentile']
 # 账户余额必须大于30%才能交易
 free_cash_limit_percentile = MarginAccount['free_cash_limit_percentile']
 # 价格精度
@@ -328,13 +326,13 @@ def new_margin_order(symbol,qty,indicator):
             free_cash = float(asset.get('free'))
     # 规则：账户余额必须大于 base_balance * free_cash_limit_percentile 才能交易
     if free_coin < qty:
-        logger.warning("Current Account coin balance is less then {}%. don't do order anymore.".format(free_coin_limit_percentile * 100))
+        logger.warning("Current Account coin balance < {} {}. don't do order anymore.".format(qty, coin_symbol))
         buy_coin_qty = float(qty_accuracy % float(loan * 0.5))
         if free_cash > (base_balance * free_cash_limit_percentile) and (buy_coin_qty * float(buy_price)) < free_cash:
             repay_asset(pair_symbol, coin_symbol, buy_coin_qty, "BUY")
         return
     if free_cash < (base_balance * free_cash_limit_percentile):
-        logger.warning("Current Account cash balance is less then {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
+        logger.warning("Current Account cash balance < {}%. don't do order anymore.".format(free_cash_limit_percentile * 100))
         sell_coin_qty = float(qty_accuracy % float(free_coin - loan))
         if free_coin > loan and (sell_coin_qty * float(sell_price)) > 10:  # 币安要求最小交易金额必须大于10
             repay_asset(pair_symbol, coin_symbol, sell_coin_qty, SIDE_SELL)

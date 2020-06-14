@@ -25,7 +25,6 @@ MarginAccount = {
     'fiat_symbol': 'USD',  # <---本地法币
     'fiat_price': 1,   # 1 USD 兑换 本地法币的价格
     'max_margins': 20,  # <--------(depth * 2) * float(0.8), 最大交易对数量
-    'free_coin_limit_percentile': 0.1,  #<-----最小可用币数量百分比， 20%
     'free_cash_limit_percentile': 0.1,  #<-----最小可用金额百分比， 20%
     'price_accuracy': '%.4f',  #<----- 价格精度，交易需要指定。默认 .4f
     'qty_accuracy': '%.2f', #<------ 数量进度， EOS是 2个， BTC是6个
