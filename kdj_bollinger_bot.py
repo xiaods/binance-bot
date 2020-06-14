@@ -389,8 +389,8 @@ def new_margin_order(symbol,qty,indicator):
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
 
-        logger.info("做小空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
-        logger.info("做小空：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
+        logger.info("做网格：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
+        logger.info("做网格：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
         short_order.append( buy_order.get("orderId") )
         short_order.append( sell_order.get("orderId") )
 
