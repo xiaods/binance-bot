@@ -223,7 +223,7 @@ def kdj_signal_trading(symbol):
     # 交易策略，吃多单
     if check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
         float(np_k[-1]) < float(30) and float(np_j[-1]) < float(30) and \
-        float(np_low_data[-1]) <= float(cur_dn) and len(long_order) < max_margins/2 and \
+        float(np_low_data[-1]) <= float(cur_dn)  and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "LONG"  # 做多
@@ -231,31 +231,23 @@ def kdj_signal_trading(symbol):
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
     elif check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
          float(np_k[-1]) > float(70) and float(np_j[-1]) > float(70) and \
-        float(np_high_data[-1]) >= float(cur_up) and len(short_order) < max_margins/2 and \
+        float(np_high_data[-1]) >= float(cur_up)  and \
         (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
         indicator = "SHORT" # 做空
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
-    elif float(np_k[-1]) < float(np_d[-1]) and float(np_j[-1]) < float(np_d[-1]) and \
-        float(np_k[-1]) < float(30) and float(np_j[-1]) < float(20) and \
-        float(np_low_data[-1]) <= float(cur_dn) and len(short_order) < max_margins/2 and \
-        (order_dt_ended - order_dt_started).total_seconds() > 60*10:
+    elif check_range(float(np_k[-1]) - float(np_d[-1]), -2.0, 2.0) and \
+         float(np_low_data[-1]) > float(cur_dn)  and \
+         float(np_high_data[-1]) < float(cur_up)  and \
+        (order_dt_ended - order_dt_started).total_seconds() > 60*5:
 
-        indicator = "MSHORT" # 做小空
-        close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
-        order_dt_started = datetime.utcnow()  # 5分钟只能下一单
-    elif float(np_k[-1]) > float(np_d[-1]) and float(np_j[-1]) > float(np_d[-1]) and \
-         float(np_k[-1]) > float(70) and float(np_j[-1]) > float(80) and \
-        float(np_high_data[-1]) >= float(cur_up) and len(long_order) < max_margins/2 and \
-         (order_dt_ended - order_dt_started).total_seconds() > 60*10:
-
-        indicator = "MLONG" # 做小多
+        indicator = "GRID" # 做空
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         order_dt_started = datetime.utcnow()  # 5分钟只能下一单
 
     # 这里加上延时判断，当获得信号后，判断60/5 = 12 次 信号中，close报价list是按照涨的趋势还是跌的趋势，这样可以果断修正交易策略
-    if indicator in ["MSHORT", "SHORT", "MLONG", "LONG"]:
+    if indicator in ["SHORT", "LONG", "GRID"]:
         close_price_list.append(float(np_close_data[-1]))  #加入当前最新价格
         logger.info("最新价格信号列表{}".format(close_price_list))
         # 开始计算close次数
@@ -279,14 +271,10 @@ def check_indicator(close_price_list, indicator):
     k=trendline(index, close_price_list, 3) #采用三次多项式拟合曲线
     logger.info("涨跌k趋势指标: {},  k > {} 表示上升, k < {} 表示下降".format(k, trend_limit_tan[0], trend_limit_tan[1]))
     if float(k) > float(trend_limit_tan[0]):  #上升 应该做多
-        if indicator == "MSHORT":
-            indicator  = "MLONG"
-        elif indicator == "SHORT":
+        if indicator == "SHORT":
             indicator = "LONG"
     elif float(k) < float(trend_limit_tan[1]): #下降 应该做空
-        if indicator == "MLONG":
-            indicator = "MSHORT"
-        elif indicator == "LONG":
+        if indicator == "LONG":
             indicator = "SHORT"
     #返回信号值
     return indicator
@@ -352,7 +340,7 @@ def new_margin_order(symbol,qty,indicator):
             repay_asset(pair_symbol, coin_symbol, sell_coin_qty, SIDE_SELL)
         return
 
-    # LONG or SHORT
+    # LONG or SHORT or GRID
     if indicator == "LONG":
         buy_price = float(ticker.get('bidPrice'))*float(1)
         buy_price = price_accuracy % buy_price
@@ -379,37 +367,11 @@ def new_margin_order(symbol,qty,indicator):
         long_order.append( buy_order.get("orderId") )
         long_order.append( sell_order.get("orderId") )
 
-    elif indicator == "MLONG":
-        buy_price = float(ticker.get('bidPrice'))*float(1)
+    elif indicator == "GRID":
+        buy_price = float(ticker.get('bidPrice'))*float(1-0.002)
         buy_price = price_accuracy % buy_price
 
-        sell_price = float(ticker.get('askPrice'))*float(1+0.004)
-        sell_price = price_accuracy % sell_price
-
-        buy_order = client.create_margin_order(symbol=symbol,
-                                       side=SIDE_BUY,
-                                       type=ORDER_TYPE_LIMIT,
-                                       quantity=qty,
-                                       price=buy_price,
-                                       timeInForce=TIME_IN_FORCE_GTC)
-        
-        sell_order = client.create_margin_order(symbol=symbol,
-                                       side=SIDE_SELL,
-                                       type=ORDER_TYPE_LIMIT,
-                                       quantity=qty,
-                                       price=sell_price,
-                                       timeInForce=TIME_IN_FORCE_GTC)
-
-        logger.info("做小多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
-        logger.info("做小多：卖单ID:{}, 价格：{}， 数量：{}".format(sell_order, sell_price, qty)) 
-        long_order.append( buy_order.get("orderId") )
-        long_order.append( sell_order.get("orderId") )
-
-    elif indicator == "MSHORT":
-        buy_price = float(ticker.get('bidPrice'))*float(1-0.003)
-        buy_price = price_accuracy % buy_price
-
-        sell_price = float(ticker.get('askPrice'))*float(1+0.003)
+        sell_price = float(ticker.get('askPrice'))*float(1+0.002)
         sell_price = price_accuracy % sell_price
 
         buy_order = client.create_margin_order(symbol=symbol,
