@@ -351,6 +351,7 @@ def new_margin_order(symbol,qty,indicator):
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=buy_price,
+                                       sideEffectType='AUTO_REPAY',
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         sell_order = client.create_margin_order(symbol=symbol,
@@ -358,6 +359,7 @@ def new_margin_order(symbol,qty,indicator):
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=sell_price,
+                                       sideEffectType='MARGIN_BUY',
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         logger.info("做多：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
@@ -377,14 +379,15 @@ def new_margin_order(symbol,qty,indicator):
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=buy_price,
+                                       sideEffectType='AUTO_REPAY',
                                        timeInForce=TIME_IN_FORCE_GTC)
-
 
         sell_order = client.create_margin_order(symbol=symbol,
                                        side=SIDE_SELL,
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=sell_price,
+                                       sideEffectType='MARGIN_BUY',
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         logger.info("做网格：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
@@ -404,6 +407,7 @@ def new_margin_order(symbol,qty,indicator):
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=buy_price,
+                                       sideEffectType='AUTO_REPAY',
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         sell_order = client.create_margin_order(symbol=symbol,
@@ -411,6 +415,7 @@ def new_margin_order(symbol,qty,indicator):
                                        type=ORDER_TYPE_LIMIT,
                                        quantity=qty,
                                        price=sell_price,
+                                       sideEffectType='MARGIN_BUY',
                                        timeInForce=TIME_IN_FORCE_GTC)
 
         logger.info("做空：买单ID:{}, 价格：{}， 数量：{}".format(buy_order, buy_price, qty))
@@ -438,7 +443,7 @@ def repay_asset(pair_symbol, coin_symbol, qty, type):
                                        quantity=qty, 
                                        price=buy_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        logger.info("自动补仓代币 {}: {}, 补仓单价：{}".format(coin_symbol, qty, buy_price))
+        logger.info("自动补仓代币 {}: {}, 补仓单价：{}, order: {}".format(coin_symbol, qty, buy_price, buy_order))
 
     elif type ==  SIDE_SELL:
         sell_price = float(ticker.get('askPrice'))
@@ -450,7 +455,7 @@ def repay_asset(pair_symbol, coin_symbol, qty, type):
                                        quantity=qty, 
                                        price=sell_price,
                                        timeInForce=TIME_IN_FORCE_GTC)
-        logger.info("自动兑换代币 {}: {}, 兑换单价：{}".format(coin_symbol, qty, sell_price))
+        logger.info("自动兑换代币 {}: {}, 兑换单价：{}, order: {}".format(coin_symbol, qty, sell_price, sell_order))
 
 '''
 purpose: 杠杆交易怕平仓，所以通过最简化的交易单数可以判断出是否超出仓位
