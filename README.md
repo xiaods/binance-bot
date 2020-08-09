@@ -41,9 +41,10 @@ pip3 install pandas -i http://pypi.douban.com/simple --trusted-host pypi.douban.
 pip3 install -r requirements.txt
 ```
 
-### 安装并配置
+### 安装配置并运行
 bash setup.sh #初始化安装
-settings.py   #bot全局配置，运行前务必配置
+vi settings.py   #bot全局配置，运行前务必配置
+start.sh
 
 ### 打包发行安装包
 bash bundle.sh 生成安装包并发行zip格式包
@@ -56,9 +57,7 @@ mailstop.sh  停止邮件
 
 ### How do I protect my Python source code?
 
-在线混淆工具：http://pyob.oxyry.com/
+在线混淆工具(选择：Dancing Links模式)：http://pyob.oxyry.com/
 
-选择：Dancing Links
-
-专业工具(only Linux)：https://github.com/Hnfull/Intensio-Obfuscator
+专业工具(Linux，macos)：https://github.com/Hnfull/Intensio-Obfuscator
 
