@@ -1,9 +1,7 @@
 ## QCat Automated Crypto Trading bot
 
-### 对于小于4G内存的小机器，增加Swap
-please install ta-lib component
-
-RAM > 1G or add swap
+### *注意* ：对于小于4G内存的小机器，增加Swap
+RAM > 1G or add swap， 不然ta-lib安装会失败
 
 ```bash
 # (增加4G)
