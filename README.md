@@ -47,13 +47,13 @@ vi settings.py   #bot全局配置，运行前务必配置
 start.sh
 
 ### 打包发行安装包
-bash bundle.sh 生成安装包并发行zip格式包
+bash bundle.sh 生成安装包并发行zip格式安装包
 
-start.sh  启动机器人
-stop.sh  暂停机器人
-top.sh  查询当前账户挂单状态
-mail.sh  发盈利报告邮件，12小时统计发送一次
-mailstop.sh  停止邮件
+* start.sh  启动机器人
+* stop.sh  暂停机器人
+* top.sh  查询当前账户挂单状态
+* mail.sh  发盈利报告邮件，12小时统计发送一次
+* mailstop.sh  停止邮件
 
 ### How do I protect my Python source code?
 
